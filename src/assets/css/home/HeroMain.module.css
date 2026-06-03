@@ -1,6 +1,6 @@
 .section {
   position: relative;
-  height: 85vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   overflow: hidden;

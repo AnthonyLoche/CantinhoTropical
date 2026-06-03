@@ -15,7 +15,8 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 export const metadata = {
   title: "Cantinho Tropical | Petshop & Pet Hotel em Mafra",
-  description: "Especialistas em alimentação, acessórios, aves exóticas, aquariofilia, roedores, répteis e muito mais.",
+  description:
+    "Especialistas em alimentação, acessórios, aves exóticas, aquariofilia, roedores, répteis e muito mais.",
 };
 
 export default function RootLayout({ children }) {
