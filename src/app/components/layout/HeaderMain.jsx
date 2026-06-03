@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { Search, Heart, ShoppingCart } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "../../../assets/css/ui/Header.module.css";
 import logo_removed from "../../../assets/images/logo_removedbg.png";
 import Image from "next/image";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -15,56 +18,63 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const navLinks = [
+    { href: "/",         label: "Home"     },
+    { href: "/catalog",  label: "Catálogo" },
+    { href: "/about",    label: "Sobre Nós"},
+    { href: "/services", label: "Serviços" },
+    { href: "/contact",  label: "Contacto" },
+  ];
+
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
-      <div className={styles.logo}>
-        <Image
-          src={logo_removed}
-          alt="Cantinho Tropical Logo"
-          width={74}
-          height={74}
-        />
-        <span className={styles.logoText}>Cantinho Tropical</span>
-      </div>
-
-      <nav className={styles.nav}>
-        <a href="#" className={styles.navLinkActive}>
-          Home
-        </a>
-        <a href="#" className={styles.navLink}>
-          Catálogo
-        </a>
-        <a href="#" className={styles.navLink}>
-          Sobre Nós
-        </a>
-        <a href="#" className={styles.navLink}>
-          Serviços
-        </a>
-        <a href="#" className={styles.navLink}>
-          Contacto
-        </a>
-      </nav>
-
-      <div className={styles.actions}>
-        <div className={styles.searchBox}>
-          <input
-            type="text"
-            placeholder="Search products..."
-            className={styles.searchInput}
+      <div className={styles.mainBar}>
+        <Link href="/" className={styles.logo}>
+          <Image
+            src={logo_removed}
+            alt="Cantinho Tropical Logo"
+            width={74}
+            height={74}
           />
-          <button className={styles.searchBtn}>
-            <Search size={16} />
+          <span className={styles.logoText}>Cantinho Tropical</span>
+        </Link>
+
+        <nav className={styles.nav}>
+          {navLinks.map(({ href, label }) => {
+            const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={isActive ? styles.navLinkActive : styles.navLink}
+              >
+                {label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className={styles.actions}>
+          <div className={styles.searchBox}>
+            <input
+              type="text"
+              placeholder="Buscar produtos..."
+              className={styles.searchInput}
+            />
+            <button className={styles.searchBtn}>
+              <Search size={16} />
+            </button>
+          </div>
+
+          <button className={styles.iconBtn}>
+            <Heart size={22} />
+            <span className={styles.badge}>0</span>
           </button>
-        </div>
 
-        <div className={styles.iconBtn}>
-          <Heart size={22} />
-          <span className={styles.badge}>0</span>
-        </div>
-
-        <div className={styles.iconBtn}>
-          <ShoppingCart size={22} />
-          <span className={styles.badge}>0</span>
+          <button className={styles.iconBtn}>
+            <ShoppingCart size={22} />
+            <span className={styles.badge}>0</span>
+          </button>
         </div>
       </div>
     </header>
