@@ -1,0 +1,116 @@
+.section {
+  position: relative;
+  padding: var(--section-gap) 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 100px;
+  margin: 5rem var(--margin-desktop);
+}
+
+.backgroundOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.2;
+}
+
+.textureImage {
+  object-fit: cover;
+  filter: grayscale(100%);
+}
+
+.container {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--margin-desktop);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  align-items: center;
+}
+
+.imageWrapper {
+  width: 100%;
+}
+
+.imageContainer {
+  position: relative;
+  border-radius: 32px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px -15px rgba(1, 38, 31, 0.15);
+  aspect-ratio: 16 / 10;
+}
+
+.hotelImage {
+  object-fit: cover;
+}
+
+.content {
+  width: 100%;
+  color: white;
+}
+
+.badge {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--secondary-fixed);
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-family: var(--font-display-lg);
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.text {
+  font-family: var(--font-body-lg);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2.5rem;
+}
+
+.button {
+  background-color: var(--secondary-fixed);
+  color: var(--on-secondary-fixed);
+  padding: 1rem 2.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button:hover {
+  background-color: white;
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    flex-direction: row;
+  }
+  .imageWrapper,
+  .content {
+    width: 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .section {
+    margin: 3rem var(--margin-mobile);
+    border-radius: 60px;
+  }
+  .title {
+    font-size: 2rem;
+  }
+}

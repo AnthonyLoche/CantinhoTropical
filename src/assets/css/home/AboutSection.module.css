@@ -1,0 +1,134 @@
+.section {
+  padding: 60px 64px;
+  border-radius: 120px;
+  overflow: hidden;
+  margin: 0;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+/* Image */
+.imageWrapper {
+  position: relative;
+}
+
+.glow {
+  position: absolute;
+  top: -40px;
+  left: -40px;
+  width: 160px;
+  height: 160px;
+  background-color: rgba(174, 238, 203, 0.3);
+  border-radius: 9999px;
+  filter: blur(48px);
+}
+
+.image {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border-radius: 32px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: block;
+}
+
+.ratingCard {
+  position: absolute;
+  bottom: -24px;
+  right: -24px;
+  z-index: 2;
+  background: #fff;
+  padding: 28px 32px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.ratingScore {
+  font-family: "Manrope", sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: #01261f;
+  margin: 0 0 4px;
+}
+
+.ratingCount {
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 13px;
+  color: #414846;
+  margin: 0;
+}
+
+/* Content */
+.content {
+  padding-bottom: 24px;
+}
+
+.title {
+  font-family: "Manrope", sans-serif;
+  font-size: clamp(32px, 3.5vw, 48px);
+  font-weight: 700;
+  color: #01261f;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+
+.text {
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #414846;
+  margin-bottom: 24px;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #01261f;
+  padding: 0;
+  transition: gap 0.2s;
+}
+
+.link:hover {
+  gap: 14px;
+  color: #2c694e;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 80px;
+  }
+
+  .ratingCard {
+    bottom: -16px;
+    right: -8px;
+  }
+
+  .section {
+    padding: 80px 24px;
+    border-radius: 60px;
+  }
+}

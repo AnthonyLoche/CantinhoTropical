@@ -1,0 +1,151 @@
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  background-color: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 16px 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: padding 0.3s ease, box-shadow 0.3s ease;
+}
+
+.header.scrolled {
+  padding: 10px 64px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Logo */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.logoIcon {
+  color: #01261f;
+}
+
+.logoText {
+  font-family: 'Manrope', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1b1c1c;
+  letter-spacing: -0.02em;
+}
+
+/* Nav */
+.nav {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.navLink {
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #414846;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.navLink:hover {
+  color: #01261f;
+}
+
+.navLinkActive {
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2c694e;
+  text-decoration: none;
+  border-bottom: 2px solid #2c694e;
+  padding-bottom: 4px;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  background-color: #f0eded;
+  border-radius: 9999px;
+  padding: 6px 16px;
+  width: 240px;
+  gap: 8px;
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #1b1c1c;
+  width: 100%;
+  font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.searchInput::placeholder {
+  color: rgba(65, 72, 70, 0.5);
+}
+
+.searchBtn {
+  background: #1b1c1c;
+  border: none;
+  border-radius: 9999px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  flex-shrink: 0;
+  transition: background-color 0.2s;
+}
+
+.searchBtn:hover {
+  background-color: #2c694e;
+}
+
+.iconBtn {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: #1b1c1c;
+  transition: color 0.2s;
+}
+
+.iconBtn:hover {
+  color: #2c694e;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: #2c694e;
+  color: #fff;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: 'Manrope', sans-serif;
+}
