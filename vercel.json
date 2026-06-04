@@ -1,9 +1,3 @@
 {
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
   "buildCommand": "prisma generate && next build"
 }
