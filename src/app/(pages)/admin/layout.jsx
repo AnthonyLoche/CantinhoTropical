@@ -19,6 +19,7 @@ import {
   ChevronRight,
   ChevronLeft,
   Grid3x3,
+  Home
 } from "lucide-react";
 import styles from "../../../assets/css/admin/admin.module.css";
 import logo_removed from "../../../assets/images/logo_removedbg.png";
@@ -70,6 +71,7 @@ export default function AdminLayout({ children }) {
 
   // Menu items - atualizados
   const primaryMenuItems = [
+    { title: "Home", icon: Home, route: "/" },
     { title: "Dashboard", icon: LayoutDashboard, route: "/admin/dashboard" },
     { title: "Produtos", icon: Package, route: "/admin/products" },
     { title: "Categorias", icon: FolderTree, route: "/admin/categories" },

@@ -72,9 +72,6 @@ export default function Footer() {
                 <a href="tel:+351915290212">+351 915 290 212</a>
               </li>
               <li>
-                <a href="mailto:geral@cantinhotropical.pt">geral@cantinhotropical.pt</a>
-              </li>
-              <li>
                 <address style={{ fontStyle: "normal" }}>
                   Rua das Laranjeiras<br />
                   2640-577 Mafra, Portugal

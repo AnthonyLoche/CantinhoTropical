@@ -1,21 +1,9 @@
 'use server';
 
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/modules/auth/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function getCategoriesAction() {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session || !session.user) {
-      return {
-        success: false,
-        error: 'Não autorizado',
-        data: [],
-      };
-    }
-
     const categories = await prisma.category.findMany({
       orderBy: { name: 'asc' },
     });

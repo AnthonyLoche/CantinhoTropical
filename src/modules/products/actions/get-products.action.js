@@ -1,37 +1,40 @@
 'use server';
 
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/modules/auth/auth';
 import { prisma } from '@/lib/prisma';
 
 /**
- * Get products with optional search
+ * Get products with optional search - Public access
  * @param {Object} params - Search parameters
  * @param {string} params.search - Search term
+ * @param {string} params.categoryId - Filter by category
+ * @param {string} params.brandId - Filter by brand
+ * @param {boolean} params.activeOnly - Only show active products (default: true)
  * @returns {Promise<Object>} Result with success/error and products array
  */
-export async function getProductsAction({ search = '' } = {}) {
+export async function getProductsAction({ search = '', categoryId = null, brandId = null, activeOnly = true } = {}) {
   try {
-    // 🔐 Verificar autenticação
-    const session = await getServerSession(authOptions);
+    // Build where clause
+    const where = {
+      ...(activeOnly && { active: true }),
+    };
     
-    if (!session || !session.user) {
-      return {
-        success: false,
-        error: 'Não autorizado. Faça login novamente.',
-        data: [],
-      };
+    // Search by name or description
+    if (search) {
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
     }
-
-    // Build where clause for search
-    const where = search
-      ? {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' } },
-            { id: { contains: search, mode: 'insensitive' } },
-          ],
-        }
-      : {};
+    
+    // Filter by category
+    if (categoryId) {
+      where.categoryId = categoryId;
+    }
+    
+    // Filter by brand
+    if (brandId) {
+      where.brandId = brandId;
+    }
 
     // Fetch products with relations
     const products = await prisma.product.findMany({

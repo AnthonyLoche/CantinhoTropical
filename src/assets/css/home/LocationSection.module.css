@@ -156,3 +156,93 @@
     font-size: 0.875rem;
   }
 }
+
+/* Schedule Table */
+.scheduleTable {
+  margin-top: 0.25rem;
+}
+
+.scheduleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  padding: 0.25rem 0;
+}
+
+.scheduleDay {
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+}
+
+.scheduleHours {
+  color: var(--color-on-surface);
+}
+
+.scheduleDivider {
+  height: 1px;
+  background-color: var(--color-outline-variant);
+  margin: 0.5rem 0;
+}
+
+.todayHours {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem 0;
+  border-top: 1px dashed var(--color-outline-variant);
+}
+
+.todayLabel {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.todayValue {
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.statusBadge.open {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+
+.statusBadge.closed {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.scheduleNote {
+  font-size: 0.7rem;
+  color: var(--color-secondary);
+  font-style: italic;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0;
+  border-left: 2px solid var(--color-secondary);
+  padding-left: 0.5rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .scheduleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .todayHours {
+    flex-wrap: wrap;
+  }
+}

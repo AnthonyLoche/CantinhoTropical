@@ -23,13 +23,13 @@ export default function Home() {
         <CategoryGrid />
       </Reveal>
       <Reveal>
+        <FeaturesSection />
+      </Reveal>
+      <Reveal>
         <AboutSection />
       </Reveal>
       <Reveal>
         <FeaturedProducts />
-      </Reveal>
-      <Reveal>
-        <FeaturesSection />
       </Reveal>
       <Reveal>
         <TestimonialsSection />
