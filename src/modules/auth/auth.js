@@ -1,10 +1,9 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-
 import { prisma } from "@/lib/prisma";
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -21,18 +20,14 @@ export default NextAuth({
           },
         });
 
-        if (!admin) {
-          return null;
-        }
+        if (!admin) return null;
 
         const passwordValid = await bcrypt.compare(
           credentials.password,
           admin.password
         );
 
-        if (!passwordValid) {
-          return null;
-        }
+        if (!passwordValid) return null;
 
         return {
           id: admin.id,
@@ -48,4 +43,4 @@ export default NextAuth({
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
