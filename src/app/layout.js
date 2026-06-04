@@ -1,5 +1,7 @@
 import { Manrope, Be_Vietnam_Pro } from "next/font/google";
 import "../assets/globals.css";
+import "../assets/css/animation.css";
+
 
 const manrope = Manrope({
   variable: "--font-manrope",

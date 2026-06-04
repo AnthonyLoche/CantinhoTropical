@@ -1,12 +1,18 @@
-import { HeaderMain, HeroCatalog, CategoriesCatalog, MainCatalog, FooterMain } from "../../components";
+import { HeaderMain, HeroCatalog, CategoriesCatalog, MainCatalog, FooterMain, Reveal } from "../../components";
 
 export default function Catalog() {
   return (
     <>
       <HeaderMain />
-      <HeroCatalog />
-      <CategoriesCatalog />
-      <MainCatalog />
+      <Reveal>
+        <HeroCatalog />
+      </Reveal>
+      <Reveal>
+        <CategoriesCatalog />
+      </Reveal>
+      <Reveal>
+        <MainCatalog />
+      </Reveal>
       <FooterMain />
     </>
   );
