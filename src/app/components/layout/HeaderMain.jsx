@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, LogIn } from "lucide-react";
+import { Search, LogIn, User, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import styles from "../../../assets/css/ui/Header.module.css";
 import logo_removed from "../../../assets/images/logo_removedbg.png";
 import Image from "next/image";
@@ -11,6 +12,8 @@ import Image from "next/image";
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+  const isAuthenticated = status === "authenticated";
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -21,7 +24,6 @@ export default function Header() {
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/catalog", label: "Catálogo" },
-    // { href: "/about", label: "Sobre Nós" },
     { href: "/services", label: "Serviços" },
     { href: "/contact", label: "Contacto" },
   ];
@@ -67,10 +69,17 @@ export default function Header() {
             </button>
           </div>
 
-          <Link href="/login" className={styles.loginBtn}>
-            <LogIn size={18} />
-            <span>Entrar</span>
-          </Link>
+          {isAuthenticated ? (
+            <Link href="/admin/dashboard" className={styles.adminBtn}>
+              <LayoutDashboard size={18} />
+              <span>Admin</span>
+            </Link>
+          ) : (
+            <Link href="/login" className={styles.loginBtn}>
+              <LogIn size={18} />
+              <span>Entrar</span>
+            </Link>
+          )}
         </div>
       </div>
     </header>
