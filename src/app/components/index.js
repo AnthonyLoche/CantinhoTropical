@@ -1,6 +1,7 @@
 import HeaderMain from "./layout/HeaderMain";
 import FooterMain from "./layout/FooterMain";
 import Reveal from "./ui/Reveal";
+import MetricsGrid from "./ui/MetricsGrid";
 
 import HeroMain from "./home/HeroMain";
 import CategoryGrid from "./home/CategoryGrid";
@@ -26,6 +27,7 @@ import MainCatalog from "./catalog/MainCatalog";
 
 export {
   HeaderMain,
+  MetricsGrid,
   Reveal,
   HeroMain,
   CategoryGrid,

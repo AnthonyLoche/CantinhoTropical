@@ -16,13 +16,9 @@ import {
   User,
   LogOut,
   Menu,
-  Plus,
   ChevronRight,
   ChevronLeft,
   Grid3x3,
-  ShoppingBag,
-  Layers,
-  Award,
 } from "lucide-react";
 import styles from "../../../assets/css/admin/admin.module.css";
 import logo_removed from "../../../assets/images/logo_removedbg.png";
@@ -74,64 +70,30 @@ export default function AdminLayout({ children }) {
 
   // Menu items - atualizados
   const primaryMenuItems = [
-    { title: "Dashboard", icon: LayoutDashboard, route: "/admin" },
-    { title: "Produtos", icon: Package, route: "/admin/produtos" },
-    { title: "Categorias", icon: FolderTree, route: "/admin/categorias" },
-    { title: "Marcas", icon: Tag, route: "/admin/marcas" },
-    { title: "Galeria", icon: ImageIcon, route: "/admin/galeria" },
+    { title: "Dashboard", icon: LayoutDashboard, route: "/admin/dashboard" },
+    { title: "Produtos", icon: Package, route: "/admin/products" },
+    { title: "Categorias", icon: FolderTree, route: "/admin/categories" },
+    { title: "Marcas", icon: Tag, route: "/admin/brands" },
     { title: "Usuários", icon: Users, route: "/admin/usuarios" },
-  ];
-
-  const settingsMenuItems = [
-    { title: "Perfil", icon: User, route: "/admin/perfil" },
     { title: "Configurações", icon: Settings, route: "/admin/configuracoes" },
   ];
 
+
   // Mobile bottom nav
   const bottomNavItems = [
-    { title: "Início", icon: LayoutDashboard, route: "/admin" },
-    { title: "Produtos", icon: Package, route: "/admin/produtos" },
-    { title: "Categorias", icon: FolderTree, route: "/admin/categorias" },
+    { title: "Início", icon: LayoutDashboard, route: "/admin/dashboard" },
+    { title: "Produtos", icon: Package, route: "/admin/products" },
+    { title: "Categorias", icon: FolderTree, route: "/admin/categories" },
     { title: "Mais", icon: Grid3x3, route: null, isAction: true },
-  ];
-
-  // Quick actions
-  const quickActions = [
-    {
-      title: "Novo Produto",
-      desc: "Adicionar produto ao catálogo",
-      icon: Package,
-      route: "/admin/produtos/novo",
-    },
-    {
-      title: "Nova Categoria",
-      desc: "Adicionar categoria",
-      icon: FolderTree,
-      route: "/admin/categorias/novo",
-    },
-    {
-      title: "Nova Marca",
-      desc: "Adicionar marca",
-      icon: Tag,
-      route: "/admin/marcas/novo",
-    },
-    {
-      title: "Novo Usuário",
-      desc: "Adicionar usuário ao sistema",
-      icon: Users,
-      route: "/admin/usuarios/novo",
-    },
   ];
 
   // More items (para o botão "Mais" no mobile)
   const moreItems = [
-    { title: "Dashboard", icon: LayoutDashboard, route: "/admin" },
-    { title: "Produtos", icon: Package, route: "/admin/produtos" },
-    { title: "Categorias", icon: FolderTree, route: "/admin/categorias" },
-    { title: "Marcas", icon: Tag, route: "/admin/marcas" },
-    { title: "Galeria", icon: ImageIcon, route: "/admin/galeria" },
+    { title: "Dashboard", icon: LayoutDashboard, route: "/admin/dashboard" },
+    { title: "Produtos", icon: Package, route: "/admin/products" },
+    { title: "Categorias", icon: FolderTree, route: "/admin/categories" },
+    { title: "Marcas", icon: Tag, route: "/admin/brands" },
     { title: "Usuários", icon: Users, route: "/admin/usuarios" },
-    { title: "Perfil", icon: User, route: "/admin/perfil" },
     { title: "Configurações", icon: Settings, route: "/admin/configuracoes" },
   ];
 
@@ -198,21 +160,6 @@ export default function AdminLayout({ children }) {
 
           <div className={styles.divider} />
 
-          <div className={styles.navSection}>
-            <span className={styles.navLabel}>Configurações</span>
-            <div className={styles.navList}>
-              {settingsMenuItems.map((item) => (
-                <Link
-                  key={item.route}
-                  href={item.route}
-                  className={`${styles.navItem} ${isActive(item.route) ? styles.active : ""}`}
-                >
-                  <item.icon size={20} />
-                  <span className={styles.navItemTitle}>{item.title}</span>
-                </Link>
-              ))}
-            </div>
-          </div>
 
           <div className={styles.sidebarFooter}>
             <div className={styles.divider} />
@@ -265,21 +212,6 @@ export default function AdminLayout({ children }) {
                   <span className={styles.mobileTitle}>CANTINHO TROPICAL</span>
                 </div>
                 <div className={styles.mobileTopbarActions}>
-                  <button
-                    className={styles.topbarIconBtn}
-                    onClick={() => setShowActionSheet(true)}
-                  >
-                    <Plus size={22} />
-                    <p>NOVO</p>
-                  </button>
-                  <button
-                    className={styles.topbarAvatarBtn}
-                    onClick={() => setShowProfileSheet(true)}
-                  >
-                    <div className={styles.topbarAvatar}>
-                      <User size={16} />
-                    </div>
-                  </button>
                 </div>
               </div>
             </div>
