@@ -1,7 +1,7 @@
 import { Manrope, Be_Vietnam_Pro } from "next/font/google";
 import "../assets/globals.css";
 import "../assets/css/animation.css";
-
+import Providers from "./providers";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -27,7 +27,9 @@ export default function RootLayout({ children }) {
       lang="pt-PT"
       className={`${manrope.variable} ${beVietnamPro.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

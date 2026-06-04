@@ -67,10 +67,10 @@ export default function Header() {
             </button>
           </div>
 
-          <button className={styles.loginBtn}>
+          <Link href="/login" className={styles.loginBtn}>
             <LogIn size={18} />
             <span>Entrar</span>
-          </button>
+          </Link>
         </div>
       </div>
     </header>
