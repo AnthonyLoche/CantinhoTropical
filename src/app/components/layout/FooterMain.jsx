@@ -24,6 +24,7 @@ export default function Footer() {
             </p>
             <div className={styles.social}>
               <a href="#" className={styles.socialLink} aria-label="Facebook">
+                <Share2 size={20} />
               </a>
               <a href="#" className={styles.socialLink} aria-label="Compartilhar">
                 <Share2 size={20} />
@@ -65,18 +66,21 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h6 className={styles.linkTitle}>Subscrever Newsletter</h6>
-            <p className={styles.newsletterText}>
-              Receba dicas de cuidado animal e promoções exclusivas.
-            </p>
-            <div className={styles.newsletterForm}>
-              <input
-                type="email"
-                placeholder="O seu e-mail"
-                className={styles.input}
-              />
-              <button className={styles.subscribeBtn}>Subscrever</button>
-            </div>
+            <h6 className={styles.linkTitle}>Contactos</h6>
+            <ul className={styles.linkList}>
+              <li>
+                <a href="tel:+351915290212">+351 915 290 212</a>
+              </li>
+              <li>
+                <a href="mailto:geral@cantinhotropical.pt">geral@cantinhotropical.pt</a>
+              </li>
+              <li>
+                <address style={{ fontStyle: "normal" }}>
+                  Rua das Laranjeiras<br />
+                  2640-577 Mafra, Portugal
+                </address>
+              </li>
+            </ul>
           </div>
         </div>
         <div className={styles.bottom}>

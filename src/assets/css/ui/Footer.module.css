@@ -33,7 +33,6 @@
   line-height: 1.6;
 }
 
-
 .social {
   display: flex;
   gap: 1rem;
@@ -48,6 +47,7 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s ease;
+  color: white;
 }
 
 .socialLink:hover {
@@ -79,44 +79,9 @@
   text-decoration: underline;
 }
 
-.newsletterText {
-  font-size: 0.875rem;
+.linkList address {
   color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 1.5rem;
-}
-
-.newsletterForm {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.input {
-  background-color: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  color: white;
-  outline: none;
-}
-
-.input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
-}
-
-.subscribeBtn {
-  background-color: var(--secondary-fixed);
-  color: var(--on-secondary-fixed);
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.subscribeBtn:hover {
-  background-color: white;
+  line-height: 1.6;
 }
 
 .bottom {
@@ -147,12 +112,25 @@
   }
 }
 
+@media (max-width: 1024px) {
+  .grid {
+    gap: 1.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 2rem;
   }
   .container {
     padding: 0 var(--margin-mobile);
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
   }
 }

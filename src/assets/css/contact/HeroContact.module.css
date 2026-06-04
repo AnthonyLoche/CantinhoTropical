@@ -1,0 +1,441 @@
+.hero {
+  position: relative;
+  padding: 5rem var(--margin-desktop);
+  overflow: hidden;
+  background: linear-gradient(135deg, #fbf9f8 0%, #f5f3f2 100%);
+  min-height: 90vh;
+  display: flex;
+  align-items: center;
+}
+
+.patternDots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(#e4e2e1 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.leafDecoration1 {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(174, 238, 203, 0.3) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.leafDecoration2 {
+  position: absolute;
+  top: 20%;
+  right: 0;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(
+    circle,
+    rgba(44, 105, 78, 0.15) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.container {
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--gutter);
+  position: relative;
+  z-index: 2;
+}
+
+.content {
+  z-index: 10;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(44, 105, 78, 0.1);
+  padding: 6px 14px;
+  border-radius: 100px;
+  color: var(--secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(4px);
+}
+
+.badgeDot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--secondary);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.title {
+  font-family: var(--font-display-lg);
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.highlight {
+  color: var(--secondary);
+  position: relative;
+  display: inline-block;
+}
+
+.highlight::after {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  width: 100%;
+  height: 12px;
+  background: rgba(44, 105, 78, 0.2);
+  border-radius: 10px;
+  z-index: -1;
+}
+
+.description {
+  font-family: var(--font-body-lg);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--on-surface-variant);
+  margin-bottom: 2rem;
+}
+
+.infoCards {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.infoCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(193, 200, 196, 0.3);
+  transition: all 0.3s ease;
+}
+
+.infoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.infoCardIcon {
+  width: 32px;
+  height: 32px;
+  background: rgba(44, 105, 78, 0.1);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--secondary);
+}
+
+.infoCardLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--on-surface-variant);
+  margin: 0;
+}
+
+.infoCardValue {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.statusBadge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-left: 8px;
+}
+
+.statusBadge.open {
+  background: rgba(34, 197, 94, 0.15);
+  color: #16a34a;
+}
+
+.statusBadge.closed {
+  background: rgba(239, 68, 68, 0.15);
+  color: #dc2626;
+}
+
+.buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btnPrimary {
+  background: var(--primary);
+  color: white;
+  padding: 0.875rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.btnPrimary:hover {
+  background: var(--secondary);
+  transform: translateY(-2px);
+  gap: 0.75rem;
+}
+
+.btnArrow {
+  transition: transform 0.2s ease;
+}
+
+.btnPrimary:hover .btnArrow {
+  transform: translateX(4px);
+}
+
+.btnWhatsapp {
+  background: #25d366;
+  color: white;
+  padding: 0.875rem 2rem;
+  border-radius: 50px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.btnWhatsapp:hover {
+  background: #128c7e;
+  transform: translateY(-2px);
+}
+
+.whatsappIcon {
+  font-size: 1.1rem;
+}
+
+.imageWrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.shapeBg1 {
+  position: absolute;
+  top: -10%;
+  right: -10%;
+  width: 60%;
+  height: 60%;
+  background: radial-gradient(
+    circle,
+    rgba(174, 238, 203, 0.4) 0%,
+    transparent 70%
+  );
+  border-radius: 9999px;
+  filter: blur(64px);
+  z-index: 0;
+  animation: float 6s ease-in-out infinite;
+}
+
+.shapeBg2 {
+  position: absolute;
+  bottom: -10%;
+  left: -10%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(44, 105, 78, 0.2) 0%,
+    transparent 70%
+  );
+  border-radius: 9999px;
+  filter: blur(64px);
+  z-index: 0;
+  animation: float 8s ease-in-out infinite reverse;
+}
+
+.shapeBg3 {
+  position: absolute;
+  top: 30%;
+  left: 15%;
+  width: 30%;
+  height: 30%;
+  background: radial-gradient(
+    circle,
+    rgba(44, 105, 78, 0.15) 0%,
+    transparent 70%
+  );
+  border-radius: 9999px;
+  filter: blur(48px);
+  z-index: 0;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 480px;
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px -15px rgba(1, 38, 31, 0.2);
+  z-index: 10;
+  transition: transform 0.5s ease;
+}
+
+.imageContainer:hover {
+  transform: scale(1.02);
+}
+
+.image {
+  object-fit: cover;
+}
+
+.decorativeBadge {
+  position: absolute;
+  bottom: -5%;
+  right: 10%;
+  width: 25%;
+  height: 25%;
+  min-width: 100px;
+  min-height: 100px;
+  background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  box-shadow: 0 20px 25px -5px rgba(44, 105, 78, 0.3);
+  animation: float 4s ease-in-out infinite;
+}
+
+.decorativeBadge span {
+  font-size: 2.5rem;
+  color: white;
+}
+
+.floatingCard {
+  position: absolute;
+  top: 5%;
+  left: 13%;
+  background: white;
+  padding: 0.75rem 1.25rem;
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  z-index: 15;
+  animation: float 5s ease-in-out infinite;
+  border: 1px solid rgba(193, 200, 196, 0.2);
+  white-space: nowrap;
+}
+
+.floatingStars {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.star {
+  color: var(--secondary);
+  font-size: 0.75rem;
+}
+
+.floatingText {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--primary);
+  margin: 0;
+}
+
+.floatingAuthor {
+  font-size: 0.6rem;
+  color: var(--on-surface-variant);
+  margin: 4px 0 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero {
+    padding: 4rem var(--margin-mobile);
+    min-height: auto;
+  }
+  .title { font-size: 2.5rem; }
+  .description { font-size: 1rem; }
+  .infoCards { gap: 0.75rem; }
+  .infoCard { padding: 0.5rem 1rem; }
+  .decorativeBadge { min-width: 70px; min-height: 70px; }
+  .decorativeBadge span { font-size: 1.75rem; }
+  .floatingCard { display: none; }
+}
+
+@media (max-width: 768px) {
+  .hero { padding: 2rem var(--margin-mobile); }
+  .container { grid-template-columns: 1fr; gap: 3rem; }
+  .title { font-size: 2rem; }
+  .badge { font-size: 0.7rem; }
+  .infoCards { flex-direction: column; align-items: flex-start; }
+  .infoCard { width: 100%; }
+  .buttons { flex-direction: column; }
+  .btnPrimary, .btnWhatsapp { width: 100%; justify-content: center; }
+  .imageContainer { max-width: 100%; }
+  .shapeBg1, .shapeBg2, .shapeBg3 { display: none; }
+  .decorativeBadge { min-width: 60px; min-height: 60px; bottom: -3%; right: -3%; }
+  .decorativeBadge span { font-size: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+  .title { font-size: 1.75rem; }
+  .decorativeBadge { min-width: 50px; min-height: 50px; }
+  .decorativeBadge span { font-size: 1.25rem; }
+}

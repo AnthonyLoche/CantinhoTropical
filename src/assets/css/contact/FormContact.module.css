@@ -1,0 +1,248 @@
+.section {
+  padding: var(--section-gap) var(--margin-desktop);
+  background-color: var(--surface-container-lowest);
+}
+
+.container {
+  width: 100%;
+  margin: 20px auto;
+  display: grid;
+  grid-template-columns: 7fr 5fr;
+  gap: 4rem;
+}
+
+/* Form Wrapper */
+.formWrapper {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 32px;
+  box-shadow: 0 10px 30px -5px rgba(1, 38, 31, 0.1);
+  border: 1px solid rgba(193, 200, 196, 0.3);
+}
+
+.formTitle {
+  font-family: var(--font-headline-lg);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroupFull {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  font-family: var(--font-label-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--on-surface-variant);
+  margin-left: 0.5rem;
+}
+
+.input {
+  background-color: var(--surface);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: var(--font-body-md);
+}
+
+.input:focus {
+  box-shadow: 0 0 0 2px rgba(44, 105, 78, 0.2);
+}
+
+.textarea {
+  background-color: var(--surface);
+  border: none;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  resize: vertical;
+  transition: all 0.2s ease;
+  font-family: var(--font-body-md);
+}
+
+.textarea:focus {
+  box-shadow: 0 0 0 2px rgba(44, 105, 78, 0.2);
+}
+
+.submitBtn {
+  background-color: var(--primary);
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 1.125rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  transform: scale(1);
+  box-shadow: 0 10px 15px -3px rgba(1, 38, 31, 0.3);
+  width: auto;
+  display: inline-block;
+}
+
+.submitBtn:hover {
+  background-color: var(--secondary);
+  transform: scale(1.02);
+}
+
+.submitBtn:active {
+  transform: scale(0.98);
+}
+
+/* Info Wrapper */
+.infoWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.infoTitle {
+  font-family: var(--font-headline-lg);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 2rem;
+}
+
+.infoList {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.infoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.infoItem:hover {
+  background-color: var(--surface-container);
+}
+
+.iconWrapper {
+  background-color: rgba(44, 105, 78, 0.1);
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoItem:hover .iconWrapper {
+  background-color: rgba(44, 105, 78, 0.2);
+}
+
+.icon {
+  color: var(--secondary);
+  width: 20px;
+  height: 20px;
+}
+
+.infoItemTitle {
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.25rem;
+  font-size: 1rem;
+}
+
+.infoText {
+  color: var(--on-surface-variant);
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .section {
+    padding: var(--section-gap) var(--margin-mobile);
+  }
+
+  .container {
+    gap: 2rem;
+  }
+
+  .formTitle,
+  .infoTitle {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .formWrapper {
+    padding: 1.5rem;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .submitBtn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .infoTitle {
+    margin-bottom: 1.5rem;
+  }
+
+  .infoList {
+    gap: 1rem;
+  }
+
+  .infoItem {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .formTitle,
+  .infoTitle {
+    font-size: 1.25rem;
+  }
+
+  .formWrapper {
+    padding: 1rem;
+    border-radius: 24px;
+  }
+}

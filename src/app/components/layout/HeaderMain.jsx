@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Heart, ShoppingCart } from "lucide-react";
+import { Search, LogIn } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "../../../assets/css/ui/Header.module.css";
@@ -19,11 +19,11 @@ export default function Header() {
   }, []);
 
   const navLinks = [
-    { href: "/",         label: "Home"     },
-    { href: "/catalog",  label: "Catálogo" },
-    { href: "/about",    label: "Sobre Nós"},
+    { href: "/", label: "Home" },
+    { href: "/catalog", label: "Catálogo" },
+    { href: "/about", label: "Sobre Nós" },
     { href: "/services", label: "Serviços" },
-    { href: "/contact",  label: "Contacto" },
+    { href: "/contact", label: "Contacto" },
   ];
 
   return (
@@ -41,7 +41,8 @@ export default function Header() {
 
         <nav className={styles.nav}>
           {navLinks.map(({ href, label }) => {
-            const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+            const isActive =
+              href === "/" ? pathname === "/" : pathname.startsWith(href);
             return (
               <Link
                 key={href}
@@ -66,14 +67,9 @@ export default function Header() {
             </button>
           </div>
 
-          <button className={styles.iconBtn}>
-            <Heart size={22} />
-            <span className={styles.badge}>0</span>
-          </button>
-
-          <button className={styles.iconBtn}>
-            <ShoppingCart size={22} />
-            <span className={styles.badge}>0</span>
+          <button className={styles.loginBtn}>
+            <LogIn size={18} />
+            <span>Entrar</span>
           </button>
         </div>
       </div>
