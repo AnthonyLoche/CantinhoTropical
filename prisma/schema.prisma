@@ -14,3 +14,52 @@ model Admin {
   password  String
   createdAt DateTime @default(now())
 }
+
+model Brand {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  imageUrl  String
+
+  products  Product[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  imageUrl    String
+
+  products    Product[]
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id              String    @id @default(cuid())
+
+  name            String
+  description     String?
+
+  price           Decimal   @db.Decimal(10,2)
+
+  stockQuantity   Int       @default(0)
+
+  imageUrl        String
+
+  active          Boolean   @default(true)
+
+  featured        Boolean   @default(false)
+
+  brandId         String
+  categoryId      String
+
+  brand           Brand     @relation(fields: [brandId], references: [id], onDelete: Restrict)
+  category        Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
