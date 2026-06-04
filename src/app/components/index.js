@@ -19,6 +19,10 @@ import HistorySection from "./about/HistorySection";
 import OwnerSection from "./about/OwnerSection";
 import TeamSection from "./about/TeamSection";
 
+import HeroCatalog from "./catalog/HeroCatalog";
+import CategoriesCatalog from "./catalog/CategoriesCatalog";
+import MainCatalog from "./catalog/MainCatalog";
+
 export {
   HeaderMain,
   HeroMain,
@@ -37,4 +41,7 @@ export {
   HistorySection,
   OwnerSection,
   TeamSection,
+  HeroCatalog,
+  CategoriesCatalog,
+  MainCatalog,
 };
