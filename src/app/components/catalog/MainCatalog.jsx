@@ -1,56 +1,25 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
-import { Filter, ChevronLeft, ChevronRight, ShoppingCart, Heart } from "lucide-react";
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import styles from "../../../assets/css/catalog/MainCatalog.module.css";
-import { getProductsAction } from "@/modules/products/actions/get-products.action";
-import { getCategoriesAction } from "@/modules/categories/actions/get-categories.action";
-import { getBrandsAction } from "@/modules/brands/actions/get-brands.action";
 
-export default function MainCatalog() {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [loading, setLoading] = useState(true);
+export default function MainCatalog({ 
+  initialProducts = [], 
+  initialCategories = [], 
+  initialBrands = [] 
+}) {
+  const [products] = useState(initialProducts);
+  const [categories] = useState(initialCategories);
+  const [brands] = useState(initialBrands);
   const [priceRange, setPriceRange] = useState(1000);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
-
-  // Fetch data
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const [productsRes, categoriesRes, brandsRes] = await Promise.all([
-          getProductsAction({}),
-          getCategoriesAction(),
-          getBrandsAction(),
-        ]);
-
-        if (isMounted) {
-          if (productsRes.success) setProducts(productsRes.data);
-          if (categoriesRes.success) setCategories(categoriesRes.data);
-          if (brandsRes.success) setBrands(brandsRes.data);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  const itemsPerPage = 8; // Alterado para 8 produtos por página
 
   // Filtrar produtos
   const filteredProducts = useMemo(() => {
@@ -126,29 +95,29 @@ export default function MainCatalog() {
   };
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('pt-BR', {
+    return new Intl.NumberFormat('pt-PT', {
       style: 'currency',
-      currency: 'BRL'
+      currency: 'EUR'
     }).format(price || 0);
   };
 
-  // Loading skeleton
-  if (loading) {
+  // Se não há produtos (estado vazio)
+  if (products.length === 0) {
     return (
       <main className={styles.main}>
         <div className={styles.container}>
           <aside className={styles.sidebar}>
-            <div className={styles.skeletonFilter} />
+            <div className={styles.sticky}>
+              <div className={styles.filterHeader}>
+                <Filter size={20} className={styles.filterIcon} />
+                <h2 className={styles.filterTitle}>Filtros</h2>
+              </div>
+              <p className={styles.filterSubtitle}>Refine sua busca</p>
+            </div>
           </aside>
           <section className={styles.productSection}>
-            <div className={styles.skeletonToolbar} />
-            <div className={styles.grid}>
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className={styles.skeletonCard}>
-                  <div className={styles.skeletonImage} />
-                  <div className={styles.skeletonInfo} />
-                </div>
-              ))}
+            <div className={styles.emptyState}>
+              <p>Nenhum produto disponível no momento.</p>
             </div>
           </section>
         </div>
@@ -201,8 +170,8 @@ export default function MainCatalog() {
                   className={styles.rangeInput}
                 />
                 <div className={styles.priceLabels}>
-                  <span>R$ 0</span>
-                  <span>R$ {priceRange}+</span>
+                  <span>€ 0</span>
+                  <span>€ {priceRange}+</span>
                 </div>
               </div>
             </div>
@@ -210,7 +179,7 @@ export default function MainCatalog() {
             {/* Brands */}
             {brands.length > 0 && (
               <div className={styles.filterGroup}>
-                <h4 className={styles.filterGroupTitle}>Marcas Premium</h4>
+                <h4 className={styles.filterGroupTitle}>Marcas</h4>
                 <div className={styles.checkboxGroup}>
                   {brands.map((brand) => (
                     <label key={brand.id} className={styles.checkboxLabel}>
@@ -262,7 +231,11 @@ export default function MainCatalog() {
             <>
               <div className={styles.grid}>
                 {paginatedProducts.map((product) => (
-                  <div key={product.id} className={styles.productCard}>
+                  <Link 
+                    key={product.id} 
+                    href={`/product/${product.id}`}
+                    className={styles.productCard}
+                  >
                     <div className={styles.imageWrapper}>
                       {product.imageUrl ? (
                         <Image
@@ -295,7 +268,7 @@ export default function MainCatalog() {
                         <span className={styles.productPrice}>{formatPrice(product.price)}</span>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
 

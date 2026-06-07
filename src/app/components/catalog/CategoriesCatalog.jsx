@@ -4,43 +4,25 @@ import { useRef, useState, useEffect } from "react";
 import styles from "../../../assets/css/catalog/CategoriesCatalog.module.css";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { getCategoriesAction } from "@/modules/categories/actions/get-categories.action";
 
-export default function CategorySlider() {
+export default function CategorySlider({ initialCategories = [] }) {
   const trackRef = useRef(null);
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(initialCategories);
   const [activeId, setActiveId] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialCategories.length === 0);
 
   const ITEM_WIDTH = 140;
 
+  // Só busca se não recebeu categorias iniciais
   useEffect(() => {
-    let isMounted = true;
-
-    const loadCategories = async () => {
-      try {
-        const result = await getCategoriesAction();
-        if (result.success && isMounted) {
-          setCategories(result.data);
-          if (result.data.length > 0) {
-            setActiveId(result.data[0]?.id);
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+    if (initialCategories.length > 0) {
+      // Se já tem categorias, define o primeiro como ativo
+      if (initialCategories.length > 0 && !activeId) {
+        setActiveId(initialCategories[0]?.id);
       }
-    };
-
-    loadCategories();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+      setLoading(false);
+    }
+  }, [initialCategories, activeId]);
 
   const scroll = (dir) => {
     if (!trackRef.current) return;
