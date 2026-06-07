@@ -11,7 +11,8 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
   gap: 16px;
 }
 
@@ -35,52 +36,64 @@
 
 .title {
   font-family: var(--font-family);
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 700;
   color: var(--color-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-family: var(--font-family);
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
   margin: 0;
 }
 
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .primaryButton {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 18px;
+  padding: 10px 20px;
   background-color: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-family: var(--font-family);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
 }
 
-.primaryButton:hover {
+.primaryButton:hover:not(:disabled) {
   opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .secondaryButton {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 16px;
+  padding: 9px 18px;
   background-color: var(--color-surface);
   color: var(--color-on-surface);
   border: 1px solid var(--color-outline-variant);
-  border-radius: 8px;
-  font-family: var(--font-family);
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 .secondaryButton:hover {
@@ -91,19 +104,19 @@
 .metricsGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .metricsCard {
   background-color: var(--color-surface);
   border: 1px solid var(--color-outline-variant);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 16px;
+  transition: all 0.2s;
 }
 
 .metricsCard:hover {
@@ -112,9 +125,9 @@
 }
 
 .metricsIconWrapper {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -123,40 +136,39 @@
 
 .metricsTextWrapper {
   flex: 1;
-  min-width: 0;
 }
 
 .metricsValue {
   font-family: var(--font-family);
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--color-on-surface);
   margin: 0;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .metricsTitle {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-on-surface-variant);
-  margin: 3px 0 4px;
+  margin: 4px 0 0;
 }
 
 /* ── Toolbar ── */
 .toolbar {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   flex-wrap: wrap;
 }
 
 .searchBar {
   flex: 1;
   position: relative;
-  min-width: 200px;
+  min-width: 240px;
 }
 
 .searchIcon {
@@ -169,15 +181,15 @@
 
 .searchInput {
   width: 100%;
-  padding: 9px 12px 9px 38px;
+  padding: 10px 12px 10px 38px;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: var(--color-surface);
   font-family: var(--font-family);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-on-surface);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 .searchInput:focus {
@@ -189,16 +201,16 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 9px 14px;
+  padding: 9px 16px;
   background-color: var(--color-surface);
   border: 1px solid var(--color-outline-variant);
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--color-on-surface-variant);
   cursor: pointer;
   white-space: nowrap;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 .filterButton:hover {
@@ -208,7 +220,7 @@
 /* ── Table Wrapper ── */
 .tableWrapper {
   border: 1px solid var(--color-outline-variant);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   background-color: var(--color-surface);
 }
@@ -216,7 +228,7 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 500px;
+  min-width: 800px;
 }
 
 .tableHeader {
@@ -224,10 +236,10 @@
 }
 
 .tableHeaderCell {
-  padding: 11px 14px;
+  padding: 14px 20px;
   text-align: left;
   font-family: var(--font-family);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -249,72 +261,119 @@
 }
 
 .tableCell {
-  padding: 12px 14px;
+  padding: 16px 20px;
   vertical-align: middle;
   font-family: var(--font-family);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-on-surface);
 }
 
-/* ── Brand Cell ── */
-.brandCell {
+/* ── User Cell ── */
+.userCell {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-.brandImage {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1px solid var(--color-outline-variant);
-}
-
-.imagePlaceholder {
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  background-color: var(--color-surface-container);
-  border: 1px solid var(--color-outline-variant);
+.userAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-outline-variant);
-  flex-shrink: 0;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
 }
 
-.brandName {
-  font-size: 13px;
+.userAvatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userName {
   font-weight: 600;
   color: var(--color-on-surface);
 }
 
-.brandId {
+.userId {
   font-size: 11px;
   color: var(--color-on-surface-variant);
-  margin-top: 1px;
+  margin-top: 2px;
+}
+
+/* ── Email Cell ── */
+.emailCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-on-surface-variant);
+}
+
+/* ── Last Login Cell ── */
+.lastLoginCell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-on-surface-variant);
+}
+
+/* ── Role Chip ── */
+.roleChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ── Status Chip ── */
+.statusChip {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.activeStatus {
+  background: rgba(34, 197, 94, 0.1);
+  color: #16a34a;
+}
+
+.inactiveStatus {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
 }
 
 /* ── Action Buttons ── */
 .actionButtons {
   display: flex;
-  gap: 4px;
+  gap: 6px;
 }
 
 .editButton,
-.deleteButton {
+.deleteButton,
+.suspendButton,
+.activateButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 7px;
+  border-radius: 8px;
   background-color: var(--color-surface);
   cursor: pointer;
   color: var(--color-on-surface-variant);
-  transition: all 0.15s ease;
+  transition: all 0.15s;
 }
 
 .editButton:hover {
@@ -334,15 +393,27 @@
   cursor: not-allowed;
 }
 
+.suspendButton:hover {
+  border-color: #f59e0b;
+  color: #f59e0b;
+  background-color: rgba(245, 158, 11, 0.06);
+}
+
+.activateButton:hover {
+  border-color: #10b981;
+  color: #10b981;
+  background-color: rgba(16, 185, 129, 0.06);
+}
+
 /* ── Pagination Footer ── */
 .tableFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 16px;
-  margin-top: 16px;
+  padding: 16px 20px;
+  margin-top: 20px;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 12px;
+  border-radius: 16px;
   background-color: var(--color-surface-container-low);
   flex-wrap: wrap;
   gap: 12px;
@@ -351,39 +422,37 @@
 .footerLeft {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .paginationText {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-on-surface-variant);
 }
 
 .itemsPerPageSelect {
-  padding: 5px 10px;
+  padding: 6px 12px;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 7px;
+  border-radius: 8px;
   background-color: var(--color-surface);
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
-  outline: none;
-  color: var(--color-on-surface);
 }
 
 .footerRight {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .paginationButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 7px;
+  border-radius: 8px;
   background-color: var(--color-surface);
   cursor: pointer;
   color: var(--color-on-surface-variant);
@@ -403,20 +472,20 @@
 .pageNumbers {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .pageNumber {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 8px;
   background: transparent;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-on-surface-variant);
   transition: all 0.15s;
 }
@@ -433,32 +502,34 @@
 }
 
 /* ── Loading Skeleton ── */
+.skeletonMetric {
+  height: 92px;
+  background: linear-gradient(90deg, var(--color-surface-container) 25%, var(--color-surface-container-high) 50%, var(--color-surface-container) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 16px;
+}
+
 .loadingContainer {
   border: 1px solid var(--color-outline-variant);
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
 }
 
 .skeletonRow {
   display: flex;
   align-items: center;
-  padding: 14px 16px;
-  gap: 16px;
+  padding: 16px 20px;
+  gap: 20px;
   border-bottom: 1px solid var(--color-outline-variant);
 }
 
 .skeletonCell {
-  height: 32px;
-  background: linear-gradient(
-    90deg,
-    var(--color-surface-container) 25%,
-    var(--color-surface-container-high) 50%,
-    var(--color-surface-container) 75%
-  );
+  height: 24px;
+  background: linear-gradient(90deg, var(--color-surface-container) 25%, var(--color-surface-container-high) 50%, var(--color-surface-container) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 6px;
-  flex-shrink: 0;
 }
 
 @keyframes shimmer {
@@ -472,27 +543,27 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 72px 24px;
+  padding: 80px 24px;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 12px;
+  border-radius: 16px;
   background-color: var(--color-surface);
 }
 
 .emptyIcon {
   color: var(--color-outline-variant);
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   opacity: 0.5;
 }
 
 .emptyTitle {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--color-on-surface);
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .emptySubtitle {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-on-surface-variant);
 }
 
@@ -500,23 +571,32 @@
 .modalOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.45);
+  background-color: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 24px;
+  padding: 20px;
 }
 
 .modal {
   background-color: var(--color-surface);
-  border-radius: 16px;
+  border-radius: 20px;
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.15);
+}
+
+.deleteModal {
+  background-color: var(--color-surface);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  padding: 32px;
 }
 
 .modalHeader {
@@ -528,11 +608,10 @@
   position: sticky;
   top: 0;
   background: var(--color-surface);
-  z-index: 1;
 }
 
 .modalTitle {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--color-primary);
   margin: 0;
@@ -542,13 +621,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 8px;
+  border-radius: 10px;
   background: transparent;
   cursor: pointer;
-  color: var(--color-on-surface-variant);
   transition: all 0.15s;
 }
 
@@ -560,7 +638,7 @@
   padding: 24px;
 }
 
-.formFields {
+.formGrid {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -569,30 +647,38 @@
 .formField {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+}
+
+.formFieldFull {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .formLabel {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--color-on-surface-variant);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
-.formInput {
-  padding: 9px 12px;
+.formInput,
+.formSelect {
+  padding: 11px 14px;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   font-family: var(--font-family);
   color: var(--color-on-surface);
   background: var(--color-surface);
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
-.formInput:focus {
+.formInput:focus,
+.formSelect:focus {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(1, 38, 31, 0.08);
 }
@@ -602,65 +688,44 @@
 }
 
 .errorMessage {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-error);
-}
-
-.fileInput {
-  padding: 9px 12px;
-  border: 1px dashed var(--color-outline-variant);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  font-family: var(--font-family);
-  color: var(--color-on-surface-variant);
-  transition: border-color 0.2s;
-}
-
-.fileInput:hover {
-  border-color: var(--color-primary);
-}
-
-.fileInfo {
-  font-size: 11px;
-  color: var(--color-on-surface-variant);
   margin-top: 4px;
 }
 
-.imagePreview {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 8px;
-  font-size: 13px;
-  color: var(--color-on-surface-variant);
+.passwordWrapper {
+  position: relative;
 }
 
-.previewImage {
-  border-radius: 8px;
-  border: 1px solid var(--color-outline-variant);
-  object-fit: cover;
+.passwordToggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-on-surface-variant);
 }
 
 .modalFooter {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
   padding-top: 20px;
   margin-top: 20px;
   border-top: 1px solid var(--color-outline-variant);
 }
 
 .cancelButton {
-  padding: 9px 20px;
+  padding: 10px 20px;
   background: transparent;
   border: 1px solid var(--color-outline-variant);
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  color: var(--color-on-surface-variant);
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 .cancelButton:hover {
@@ -668,12 +733,12 @@
 }
 
 .saveButton {
-  padding: 9px 24px;
+  padding: 10px 24px;
   background-color: var(--color-primary);
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 13px;
+  border-radius: 10px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -688,24 +753,59 @@
   cursor: not-allowed;
 }
 
-.spinner {
-  width: 15px;
-  height: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+/* Delete Modal */
+.deleteModalIcon {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+  background-color: rgba(239, 68, 68, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: #dc2626;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
+.deleteModalTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin-bottom: 12px;
+}
+
+.deleteModalText {
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.deleteModalActions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.deleteConfirmButton {
+  padding: 10px 24px;
+  background-color: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.deleteConfirmButton:hover {
+  opacity: 0.88;
 }
 
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .metricsGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
   }
 }
 
@@ -713,43 +813,34 @@
   .container {
     padding: 16px;
   }
-
-  .header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .headerActions {
-    justify-content: flex-start;
-  }
-
+  
   .title {
-    font-size: 22px;
+    font-size: 24px;
   }
-
+  
   .metricsGrid {
     grid-template-columns: 1fr;
   }
-
+  
   .toolbar {
     flex-direction: column;
     align-items: stretch;
   }
-
+  
   .filterButton {
     justify-content: center;
   }
-
+  
   .tableFooter {
     flex-direction: column;
     align-items: flex-start;
   }
-
+  
   .footerLeft {
     width: 100%;
     justify-content: space-between;
   }
-
+  
   .footerRight {
     width: 100%;
     justify-content: center;

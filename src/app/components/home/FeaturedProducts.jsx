@@ -1,42 +1,77 @@
-import Image from "next/image";
-import styles from "../../../assets/css/home/FeaturedProducts.module.css";
+"use client";
 
-const products = [
-  {
-    id: 1,
-    badge: "Especial",
-    badgeClass: "badgeDark",
-    category: "Cães • Alimentação",
-    name: "Ração Premium Holistic 12kg",
-    price: "54,90€",
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuAAvKjURStfh-WpJr4xqy1QLH3gKINCbZGY52foJvMWgnc8FurNJWAvXT4iLwZxUggiwILTqqSRrqQehhUJ0ayVMpIIG7ZFQQqpk_kWySUmuDVpTo9wLbkoFf-MrFVV-BWPLKMYqJ1apy_BR__u4saUkNmGIg3LL2vSXXOYUWnqjOxhS5gIRjs9oFiscxuQe-tyFAn3dPMB_r4wZQay06HLEp7-XLlMrOz3sEWYzRInHhNR28iTDjYNNhXB65rHGK8kL2W3kjZZX6Y",
-  },
-  {
-    id: 2,
-    badge: "Novo",
-    badgeClass: "badgeGreen",
-    category: "Aves • Acessórios",
-    name: "Brinquedo Natural de Corda",
-    price: "12,50€",
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuCTxCkNOoo6SjghpeVoXBhHt9r__TI2lwelL7Ijv4S2jwSj3G1mV7UqBd3KQykkCZTaydR8iAYbFo7CfMJY-zfjGbDs48R2axaxJFhYs46kF36M4DD_H1dPxuARi5EE8HG7MuxwvtpW5ikAjeLgA0OXd0vgMbbQ8ftmMQ9LtdrHN3Z_885_gtYwrO_8bDsE9l3KU20g5P7xfF2v69sllgfwzQOnCvE1RQRuKkRlRGNfOO_CojZOe25r5-Kepf1vGMN5wkxVaOoiT9U",
-  },
-  {
-    id: 3,
-    category: "Aquariofilia • Tecnologia",
-    name: "Filtro Externo Pro Silent",
-    price: "89,00€",
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBDEjPfVILM9CnBzks6xsp2E4mYgoFMhB0J9kSwm4zhFCQv2XLDvJyeIjXnV4HmvPE33NHyw47NOV8_Zs4PncKUG3u2LjbufZp1hbF3xVFoG8Lz2633eQe98aGFaRf0PjuxEw_Jc67ZxEbOvK6zu5JZaxBUjJvJCdVXfuXO4HP9KToVfIsSVgQ9uytN5PO4mKdRH0ErtWp9Js5JLPeU10IzV91_rhjDYCYuurTifz1dbMo3m6BaOTVh9La_ZQ9ACmRiDF2pbmB8ovc",
-  },
-  {
-    id: 4,
-    category: "Cães • Passeio",
-    name: "Coleira em Pele Genuína",
-    price: "29,90€",
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuAsqFzGXIpyGZf8BQlhqE6AkU8Scyyn-P5vWSWFbxgs5TwXYJ2-jfbCSnq1lpZ0aRTbxJteBz0iTDDXfGz5_yHgSU06aPfpBuYOdmpJGO9pxJlyuOV4YY9nb2o1u1jiTSPPkW2x-plVqEmw8VQAEgdMM-TeWdVSHCkioAETRuDA5mzU2EgfrFPtVaJqwOAJgUqAf3Rz6Sec2lcTi_fEmLndeNacc1x_EuBcqrPZ-gDYq9zncuhbNYNFhXPrlzt-RUjGuwK9PO0yGwI",
-  },
-];
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import styles from "../../../assets/css/home/FeaturedProducts.module.css";
+import { getProductsAction } from "@/modules/products/actions/get-products.action";
 
 export default function FeaturedProducts() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchFeaturedProducts = async () => {
+      try {
+        const result = await getProductsAction({ activeOnly: true });
+        if (result.success && isMounted) {
+          // Filtrar apenas produtos em destaque
+          setProducts(result.data.slice(0, 4)); // Limitar a 4 produtos
+        }
+      } catch (error) {
+        console.error("Error fetching featured products:", error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    fetchFeaturedProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Formatar preço para Euro (ou Real, dependendo da moeda)
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('pt-PT', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(price || 0);
+  };
+
+  // Loading skeleton
+  if (loading) {
+    return (
+      <section className={styles.section}>
+        <div className={styles.header}>
+          <div>
+            <h2 className={styles.title}>Destaques da Estação</h2>
+            <p className={styles.subtitle}>
+              Produtos selecionados para o bem-estar do seu pet.
+            </p>
+          </div>
+          <button className={styles.viewAll} disabled>Ver tudo</button>
+        </div>
+        <div className={styles.grid}>
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className={styles.skeletonCard}>
+              <div className={styles.skeletonImage} />
+              <div className={styles.skeletonInfo} />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  // Se não houver produtos em destaque, não renderiza a seção
+  if (!loading && products.length === 0) {
+    return null;
+  }
+
   return (
     <section className={styles.section}>
       <div className={styles.header}>
@@ -46,33 +81,43 @@ export default function FeaturedProducts() {
             Produtos selecionados para o bem-estar do seu pet.
           </p>
         </div>
-        <button className={styles.viewAll}>Ver tudo</button>
+        <Link href="/catalog" className={styles.viewAll}>
+          Ver tudo
+        </Link>
       </div>
 
       <div className={styles.grid}>
-        {products.map(({ id, badge, badgeClass, category, name, price, src }) => (
-          <div key={id} className={styles.card}>
-            <div className={styles.imageWrapper}>
-              <div className={styles.imageContainer}>
-                <Image
-                  src={src}
-                  alt={name}
-                  fill
-                  className={styles.image}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                />
+        {products.map((product) => (
+          <div key={product.id} className={styles.card}>
+            <Link href={`/product/${product.id}`} className={styles.cardLink}>
+              <div className={styles.imageWrapper}>
+                <div className={styles.imageContainer}>
+                  {product.imageUrl ? (
+                    <Image
+                      src={product.imageUrl}
+                      alt={product.name}
+                      fill
+                      className={styles.image}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                    />
+                  ) : (
+                    <div className={styles.imagePlaceholder}>📷</div>
+                  )}
+                  {product.featured && (
+                    <span className={`${styles.badge} ${styles.badgeFeatured}`}>
+                      Destaque
+                    </span>
+                  )}
+                </div>
               </div>
-              {badge && (
-                <span className={`${styles.badge} ${styles[badgeClass]}`}>
-                  {badge}
-                </span>
-              )}
-            </div>
-            <p className={styles.category}>{category}</p>
-            <h4 className={styles.name}>{name}</h4>
-            <div className={styles.footer}>
-              <span className={styles.price}>{price}</span>
-            </div>
+              <p className={styles.category}>
+                {product.category?.name || "Sem categoria"}
+              </p>
+              <h4 className={styles.name}>{product.name}</h4>
+              <div className={styles.footer}>
+                <span className={styles.price}>{formatPrice(product.price)}</span>
+              </div>
+            </Link>
           </div>
         ))}
       </div>

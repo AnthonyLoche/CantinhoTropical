@@ -16,6 +16,11 @@ import {
   ShoppingCart,
   TrendingUp,
   DollarSign,
+  LayoutDashboard,
+  ChevronRight as ChevronRightIcon,
+  Download,
+  Filter,
+  ArrowUpDown,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import NextImage from "next/image";
@@ -116,7 +121,8 @@ export default function AdminProductsPage() {
     return products.filter(
       (product) =>
         product.name?.toLowerCase().includes(searchLower) ||
-        product.id?.toString().includes(searchLower)
+        product.id?.toString().includes(searchLower) ||
+        product.category?.name?.toLowerCase().includes(searchLower)
     );
   }, [products, search]);
 
@@ -347,32 +353,72 @@ export default function AdminProductsPage() {
     { value: -1, label: "Todos" },
   ];
 
+  // Função para exportar dados
+  const handleExport = () => {
+    const csvData = products.map(p => ({
+      ID: p.id,
+      Nome: p.name,
+      Preço: p.price,
+      Estoque: p.stockQuantity,
+      Marca: brands.find(b => b.id === p.brandId)?.name || '',
+      Categoria: categories.find(c => c.id === p.categoryId)?.name || '',
+      Ativo: p.active ? 'Sim' : 'Não',
+      Destaque: p.featured ? 'Sim' : 'Não'
+    }));
+    
+    const csv = [Object.keys(csvData[0]).join(','), ...csvData.map(row => Object.values(row).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `produtos_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   // Loading skeleton
   if (loading) {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Produtos</h1>
-          <button className={styles.primaryButton} onClick={openCreateModal}>
-            <Plus size={18} />
-            Novo Produto
-          </button>
+          <div className={styles.headerLeft}>
+            <div className={styles.breadcrumb}>
+              <LayoutDashboard size={12} /> Admin
+              <ChevronRightIcon size={10} /> Produtos
+            </div>
+            <h1 className={styles.title}>Produtos</h1>
+          </div>
+          <div className={styles.headerActions}>
+            <button className={styles.secondaryButton} disabled>
+              <Download size={16} /> Exportar
+            </button>
+            <button className={styles.primaryButton} disabled>
+              <Plus size={16} /> Novo Produto
+            </button>
+          </div>
         </div>
         <MetricsGrid metrics={metrics} />
-        <div className={styles.searchBar}>
-          <Search size={18} className={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder="Pesquisar produtos..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className={styles.searchInput}
-          />
+        <div className={styles.toolbar}>
+          <div className={styles.searchBar}>
+            <Search size={16} className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Pesquisar por nome, ID ou categoria..."
+              className={styles.searchInput}
+              disabled
+            />
+          </div>
+          <button className={styles.filterButton} disabled>
+            <Filter size={15} /> Filtros
+          </button>
+          <button className={styles.filterButton} disabled>
+            <ArrowUpDown size={15} /> Ordenar
+          </button>
         </div>
         <div className={styles.loadingContainer}>
           {[...Array(5)].map((_, i) => (
             <div key={i} className={styles.skeletonRow}>
-              <div className={styles.skeletonCell} style={{ width: "60px" }}></div>
+              <div className={styles.skeletonCell} style={{ width: "50px" }}></div>
               <div className={styles.skeletonCell} style={{ flex: 2 }}></div>
               <div className={styles.skeletonCell} style={{ width: "100px" }}></div>
               <div className={styles.skeletonCell} style={{ width: "80px" }}></div>
@@ -380,7 +426,7 @@ export default function AdminProductsPage() {
               <div className={styles.skeletonCell} style={{ width: "120px" }}></div>
               <div className={styles.skeletonCell} style={{ width: "60px" }}></div>
               <div className={styles.skeletonCell} style={{ width: "80px" }}></div>
-              <div className={styles.skeletonCell} style={{ width: "100px" }}></div>
+              <div className={styles.skeletonCell} style={{ width: "80px" }}></div>
             </div>
           ))}
         </div>
@@ -392,26 +438,44 @@ export default function AdminProductsPage() {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>Produtos</h1>
-        <button className={styles.primaryButton} onClick={openCreateModal}>
-          <Plus size={18} />
-          Novo Produto
-        </button>
+        <div className={styles.headerLeft}>
+          <div className={styles.breadcrumb}>
+            <LayoutDashboard size={12} /> Admin
+            <ChevronRightIcon size={10} /> Produtos
+          </div>
+          <h1 className={styles.title}>Produtos</h1>
+        </div>
+        <div className={styles.headerActions}>
+          <button className={styles.secondaryButton} onClick={handleExport}>
+            <Download size={16} /> Exportar
+          </button>
+          <button className={styles.primaryButton} onClick={openCreateModal}>
+            <Plus size={16} /> Novo Produto
+          </button>
+        </div>
       </div>
 
       {/* Metrics Cards */}
       <MetricsGrid metrics={metrics} />
 
-      {/* Search */}
-      <div className={styles.searchBar}>
-        <Search size={18} className={styles.searchIcon} />
-        <input
-          type="text"
-          placeholder="Pesquisar produtos por nome ou ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className={styles.searchInput}
-        />
+      {/* Toolbar */}
+      <div className={styles.toolbar}>
+        <div className={styles.searchBar}>
+          <Search size={16} className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Pesquisar por nome, ID ou categoria..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+        <button className={styles.filterButton}>
+          <Filter size={15} /> Filtros
+        </button>
+        <button className={styles.filterButton}>
+          <ArrowUpDown size={15} /> Ordenar
+        </button>
       </div>
 
       {/* Empty State */}
@@ -432,15 +496,15 @@ export default function AdminProductsPage() {
             <table className={styles.table}>
               <thead className={styles.tableHeader}>
                 <tr>
-                  <th className={styles.tableHeaderCell} style={{ width: "60px" }}>Imagem</th>
+                  <th className={styles.tableHeaderCell} style={{ width: "80px" }}>Imagem</th>
                   <th className={styles.tableHeaderCell}>Nome</th>
                   <th className={styles.tableHeaderCell} style={{ width: "100px" }}>Preço</th>
                   <th className={styles.tableHeaderCell} style={{ width: "80px" }}>Estoque</th>
                   <th className={styles.tableHeaderCell} style={{ width: "120px" }}>Marca</th>
                   <th className={styles.tableHeaderCell} style={{ width: "120px" }}>Categoria</th>
-                  <th className={styles.tableHeaderCell} style={{ width: "60px" }}>Ativo</th>
+                  <th className={styles.tableHeaderCell} style={{ width: "70px" }}>Ativo</th>
                   <th className={styles.tableHeaderCell} style={{ width: "80px" }}>Destaque</th>
-                  <th className={styles.tableHeaderCell} style={{ width: "100px" }}>Ações</th>
+                  <th className={styles.tableHeaderCell} style={{ width: "80px" }}>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -451,22 +515,29 @@ export default function AdminProductsPage() {
                         <NextImage
                           src={product.imageUrl}
                           alt={product.name}
-                          width={40}
-                          height={40}
+                          width={38}
+                          height={38}
                           className={styles.productImage}
                         />
                       ) : (
                         <div className={styles.imagePlaceholder}>
-                          <ImageIcon size={20} />
+                          <ImageIcon size={18} />
                         </div>
                       )}
                     </td>
                     <td className={styles.tableCell}>
-                      <span className={styles.productName}>{product.name}</span>
+                      <div className={styles.productCell}>
+                        <div>
+                          <div className={styles.productName}>{product.name}</div>
+                          <div className={styles.productId}>
+                            #{product.id?.toString().toUpperCase()}
+                          </div>
+                        </div>
+                      </div>
                     </td>
                     <td className={styles.tableCell}>
                       <span className={styles.priceText}>
-                        R$ {product.price}
+                        R$ {product.price?.toFixed(2)}
                       </span>
                     </td>
                     <td className={styles.tableCell}>
@@ -499,18 +570,20 @@ export default function AdminProductsPage() {
                         <button
                           className={styles.editButton}
                           onClick={() => openEditModal(product)}
+                          title="Editar"
                         >
-                          <Edit size={16} />
+                          <Edit size={14} />
                         </button>
                         <button
                           className={styles.deleteButton}
                           disabled={deletingId === product.id}
                           onClick={() => handleDelete(product.id)}
+                          title="Excluir"
                         >
                           {deletingId === product.id ? (
                             <div className={styles.spinner} />
                           ) : (
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           )}
                         </button>
                       </div>
@@ -547,14 +620,14 @@ export default function AdminProductsPage() {
                 disabled={page === 1}
                 className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}
               >
-                <ChevronsLeft size={18} />
+                <ChevronsLeft size={16} />
               </button>
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
                 className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}
               >
-                <ChevronLeft size={18} />
+                <ChevronLeft size={16} />
               </button>
 
               <div className={styles.pageNumbers}>
@@ -586,14 +659,14 @@ export default function AdminProductsPage() {
                 disabled={page === pageCount}
                 className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}
               >
-                <ChevronRight size={18} />
+                <ChevronRight size={16} />
               </button>
               <button
                 onClick={() => setPage(pageCount)}
                 disabled={page === pageCount}
                 className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}
               >
-                <ChevronsRight size={18} />
+                <ChevronsRight size={16} />
               </button>
             </div>
           </div>

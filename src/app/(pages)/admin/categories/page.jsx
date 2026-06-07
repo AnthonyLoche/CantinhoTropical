@@ -17,6 +17,11 @@ import {
   FileText,
   Image as LucideImage,
   ImageOff,
+  LayoutDashboard,
+  ChevronRight as ChevronRightIcon,
+  Download,
+  Filter,
+  ArrowUpDown,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import NextImage from "next/image";
@@ -279,6 +284,27 @@ export default function AdminCategoriesPage() {
     setIsModalOpen(true);
   };
 
+  // Função para exportar dados
+  const handleExport = () => {
+    const csvData = categories.map(c => ({
+      ID: c.id,
+      Nome: c.name,
+      Descrição: c.description || '',
+      'URL da Imagem': c.imageUrl || '',
+      'Produtos Vinculados': c._count?.products || 0
+    }));
+    
+    const headers = Object.keys(csvData[0]);
+    const csv = [headers.join(','), ...csvData.map(row => headers.map(h => `"${row[h] || ''}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `categorias_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const itemsPerPageOptions = [
     { value: 5, label: "5" },
     { value: 10, label: "10" },
@@ -292,22 +318,39 @@ export default function AdminCategoriesPage() {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Categorias</h1>
-          <button className={styles.primaryButton} onClick={openCreateModal}>
-            <Plus size={18} />
-            Nova Categoria
-          </button>
+          <div className={styles.headerLeft}>
+            <div className={styles.breadcrumb}>
+              <LayoutDashboard size={12} /> Admin
+              <ChevronRightIcon size={10} /> Categorias
+            </div>
+            <h1 className={styles.title}>Categorias</h1>
+          </div>
+          <div className={styles.headerActions}>
+            <button className={styles.secondaryButton} disabled>
+              <Download size={16} /> Exportar
+            </button>
+            <button className={styles.primaryButton} disabled>
+              <Plus size={16} /> Nova Categoria
+            </button>
+          </div>
         </div>
         <MetricsGrid metrics={metrics} />
-        <div className={styles.searchBar}>
-          <Search size={18} className={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder="Pesquisar categorias..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className={styles.searchInput}
-          />
+        <div className={styles.toolbar}>
+          <div className={styles.searchBar}>
+            <Search size={16} className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Pesquisar por nome ou ID..."
+              className={styles.searchInput}
+              disabled
+            />
+          </div>
+          <button className={styles.filterButton} disabled>
+            <Filter size={15} /> Filtros
+          </button>
+          <button className={styles.filterButton} disabled>
+            <ArrowUpDown size={15} /> Ordenar
+          </button>
         </div>
         <div className={styles.loadingContainer}>
           {[...Array(5)].map((_, i) => (
@@ -327,26 +370,44 @@ export default function AdminCategoriesPage() {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>Categorias</h1>
-        <button className={styles.primaryButton} onClick={openCreateModal}>
-          <Plus size={18} />
-          Nova Categoria
-        </button>
+        <div className={styles.headerLeft}>
+          <div className={styles.breadcrumb}>
+            <LayoutDashboard size={12} /> Admin
+            <ChevronRightIcon size={10} /> Categorias
+          </div>
+          <h1 className={styles.title}>Categorias</h1>
+        </div>
+        <div className={styles.headerActions}>
+          <button className={styles.secondaryButton} onClick={handleExport}>
+            <Download size={16} /> Exportar
+          </button>
+          <button className={styles.primaryButton} onClick={openCreateModal}>
+            <Plus size={16} /> Nova Categoria
+          </button>
+        </div>
       </div>
 
       {/* Metrics Cards */}
       <MetricsGrid metrics={metrics} />
 
-      {/* Search */}
-      <div className={styles.searchBar}>
-        <Search size={18} className={styles.searchIcon} />
-        <input
-          type="text"
-          placeholder="Pesquisar categorias por nome ou ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className={styles.searchInput}
-        />
+      {/* Toolbar */}
+      <div className={styles.toolbar}>
+        <div className={styles.searchBar}>
+          <Search size={16} className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Pesquisar por nome ou ID..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+        <button className={styles.filterButton}>
+          <Filter size={15} /> Filtros
+        </button>
+        <button className={styles.filterButton}>
+          <ArrowUpDown size={15} /> Ordenar
+        </button>
       </div>
 
       {/* Empty State */}
@@ -367,10 +428,10 @@ export default function AdminCategoriesPage() {
             <table className={styles.table}>
               <thead className={styles.tableHeader}>
                 <tr>
-                  <th className={styles.tableHeaderCell} style={{ width: "80px" }}>Imagem</th>
+                  <th className={styles.tableHeaderCell} style={{ width: "70px" }}>Imagem</th>
                   <th className={styles.tableHeaderCell}>Nome</th>
                   <th className={styles.tableHeaderCell}>Descrição</th>
-                  <th className={styles.tableHeaderCell} style={{ width: "120px" }}>Ações</th>
+                  <th className={styles.tableHeaderCell} style={{ width: "100px" }}>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -381,18 +442,25 @@ export default function AdminCategoriesPage() {
                         <NextImage
                           src={category.imageUrl}
                           alt={category.name}
-                          width={40}
-                          height={40}
+                          width={38}
+                          height={38}
                           className={styles.categoryImage}
                         />
                       ) : (
                         <div className={styles.imagePlaceholder}>
-                          <ImageIcon size={20} />
+                          <ImageIcon size={18} />
                         </div>
                       )}
                     </td>
                     <td className={styles.tableCell}>
-                      <span className={styles.categoryName}>{category.name}</span>
+                      <div className={styles.categoryCell}>
+                        <div>
+                          <div className={styles.categoryName}>{category.name}</div>
+                          <div className={styles.categoryId}>
+                            #{category.id?.toString().toUpperCase()}
+                          </div>
+                        </div>
+                      </div>
                     </td>
                     <td className={styles.tableCell}>
                       <span className={styles.categoryDescription}>
@@ -404,18 +472,20 @@ export default function AdminCategoriesPage() {
                         <button
                           className={styles.editButton}
                           onClick={() => openEditModal(category)}
+                          title="Editar"
                         >
-                          <Edit size={16} />
+                          <Edit size={14} />
                         </button>
                         <button
                           className={styles.deleteButton}
                           disabled={deletingId === category.id}
                           onClick={() => handleDelete(category.id)}
+                          title="Excluir"
                         >
                           {deletingId === category.id ? (
                             <div className={styles.spinner} />
                           ) : (
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           )}
                         </button>
                       </div>
@@ -452,14 +522,14 @@ export default function AdminCategoriesPage() {
                 disabled={page === 1}
                 className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}
               >
-                <ChevronsLeft size={18} />
+                <ChevronsLeft size={16} />
               </button>
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
                 className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}
               >
-                <ChevronLeft size={18} />
+                <ChevronLeft size={16} />
               </button>
 
               <div className={styles.pageNumbers}>
@@ -491,14 +561,14 @@ export default function AdminCategoriesPage() {
                 disabled={page === pageCount}
                 className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}
               >
-                <ChevronRight size={18} />
+                <ChevronRight size={16} />
               </button>
               <button
                 onClick={() => setPage(pageCount)}
                 disabled={page === pageCount}
                 className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}
               >
-                <ChevronsRight size={18} />
+                <ChevronsRight size={16} />
               </button>
             </div>
           </div>

@@ -17,6 +17,11 @@ import {
   Image as LucideImage,
   ImageOff,
   Trophy,
+  LayoutDashboard,
+  ChevronRight as ChevronRightIcon,
+  Download,
+  Filter,
+  ArrowUpDown,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import NextImage from "next/image";
@@ -271,6 +276,26 @@ export default function AdminBrandsPage() {
     setIsModalOpen(true);
   };
 
+  // Função para exportar dados
+  const handleExport = () => {
+    const csvData = brands.map(b => ({
+      ID: b.id,
+      Nome: b.name,
+      'URL da Imagem': b.imageUrl || '',
+      'Produtos Vinculados': b._count?.products || 0
+    }));
+    
+    const headers = Object.keys(csvData[0]);
+    const csv = [headers.join(','), ...csvData.map(row => headers.map(h => `"${row[h] || ''}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `marcas_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
   const itemsPerPageOptions = [
     { value: 5, label: "5" },
     { value: 10, label: "10" },
@@ -284,22 +309,39 @@ export default function AdminBrandsPage() {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <h1 className={styles.title}>Marcas</h1>
-          <button className={styles.primaryButton} onClick={openCreateModal}>
-            <Plus size={18} />
-            Nova Marca
-          </button>
+          <div className={styles.headerLeft}>
+            <div className={styles.breadcrumb}>
+              <LayoutDashboard size={12} /> Admin
+              <ChevronRightIcon size={10} /> Marcas
+            </div>
+            <h1 className={styles.title}>Marcas</h1>
+          </div>
+          <div className={styles.headerActions}>
+            <button className={styles.secondaryButton} disabled>
+              <Download size={16} /> Exportar
+            </button>
+            <button className={styles.primaryButton} disabled>
+              <Plus size={16} /> Nova Marca
+            </button>
+          </div>
         </div>
         <MetricsGrid metrics={metrics} />
-        <div className={styles.searchBar}>
-          <Search size={18} className={styles.searchIcon} />
-          <input
-            type="text"
-            placeholder="Pesquisar marcas..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className={styles.searchInput}
-          />
+        <div className={styles.toolbar}>
+          <div className={styles.searchBar}>
+            <Search size={16} className={styles.searchIcon} />
+            <input
+              type="text"
+              placeholder="Pesquisar por nome ou ID..."
+              className={styles.searchInput}
+              disabled
+            />
+          </div>
+          <button className={styles.filterButton} disabled>
+            <Filter size={15} /> Filtros
+          </button>
+          <button className={styles.filterButton} disabled>
+            <ArrowUpDown size={15} /> Ordenar
+          </button>
         </div>
         <div className={styles.loadingContainer}>
           {[...Array(5)].map((_, i) => (
@@ -318,26 +360,44 @@ export default function AdminBrandsPage() {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>Marcas</h1>
-        <button className={styles.primaryButton} onClick={openCreateModal}>
-          <Plus size={18} />
-          Nova Marca
-        </button>
+        <div className={styles.headerLeft}>
+          <div className={styles.breadcrumb}>
+            <LayoutDashboard size={12} /> Admin
+            <ChevronRightIcon size={10} /> Marcas
+          </div>
+          <h1 className={styles.title}>Marcas</h1>
+        </div>
+        <div className={styles.headerActions}>
+          <button className={styles.secondaryButton} onClick={handleExport}>
+            <Download size={16} /> Exportar
+          </button>
+          <button className={styles.primaryButton} onClick={openCreateModal}>
+            <Plus size={16} /> Nova Marca
+          </button>
+        </div>
       </div>
 
       {/* Metrics Cards */}
       <MetricsGrid metrics={metrics} />
 
-      {/* Search */}
-      <div className={styles.searchBar}>
-        <Search size={18} className={styles.searchIcon} />
-        <input
-          type="text"
-          placeholder="Pesquisar marcas por nome ou ID..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className={styles.searchInput}
-        />
+      {/* Toolbar */}
+      <div className={styles.toolbar}>
+        <div className={styles.searchBar}>
+          <Search size={16} className={styles.searchIcon} />
+          <input
+            type="text"
+            placeholder="Pesquisar por nome ou ID..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+        <button className={styles.filterButton}>
+          <Filter size={15} /> Filtros
+        </button>
+        <button className={styles.filterButton}>
+          <ArrowUpDown size={15} /> Ordenar
+        </button>
       </div>
 
       {/* Empty State */}
@@ -358,9 +418,9 @@ export default function AdminBrandsPage() {
             <table className={styles.table}>
               <thead className={styles.tableHeader}>
                 <tr>
-                  <th className={styles.tableHeaderCell} style={{ width: "80px" }}>Imagem</th>
+                  <th className={styles.tableHeaderCell} style={{ width: "70px" }}>Imagem</th>
                   <th className={styles.tableHeaderCell}>Nome</th>
-                  <th className={styles.tableHeaderCell} style={{ width: "120px" }}>Ações</th>
+                  <th className={styles.tableHeaderCell} style={{ width: "100px" }}>Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -371,36 +431,45 @@ export default function AdminBrandsPage() {
                         <NextImage
                           src={brand.imageUrl}
                           alt={brand.name}
-                          width={40}
-                          height={40}
+                          width={38}
+                          height={38}
                           className={styles.brandImage}
                         />
                       ) : (
                         <div className={styles.imagePlaceholder}>
-                          <ImageIcon size={20} />
+                          <ImageIcon size={18} />
                         </div>
                       )}
                     </td>
                     <td className={styles.tableCell}>
-                      <span className={styles.brandName}>{brand.name}</span>
+                      <div className={styles.brandCell}>
+                        <div>
+                          <div className={styles.brandName}>{brand.name}</div>
+                          <div className={styles.brandId}>
+                            #{brand.id?.toString().slice(-8).toUpperCase()}
+                          </div>
+                        </div>
+                      </div>
                     </td>
                     <td className={styles.tableCell}>
                       <div className={styles.actionButtons}>
                         <button
                           className={styles.editButton}
                           onClick={() => openEditModal(brand)}
+                          title="Editar"
                         >
-                          <Edit size={16} />
+                          <Edit size={14} />
                         </button>
                         <button
                           className={styles.deleteButton}
                           disabled={deletingId === brand.id}
                           onClick={() => handleDelete(brand.id)}
+                          title="Excluir"
                         >
                           {deletingId === brand.id ? (
                             <div className={styles.spinner} />
                           ) : (
-                            <Trash2 size={16} />
+                            <Trash2 size={14} />
                           )}
                         </button>
                       </div>
@@ -437,14 +506,14 @@ export default function AdminBrandsPage() {
                 disabled={page === 1}
                 className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}
               >
-                <ChevronsLeft size={18} />
+                <ChevronsLeft size={16} />
               </button>
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
                 className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}
               >
-                <ChevronLeft size={18} />
+                <ChevronLeft size={16} />
               </button>
 
               <div className={styles.pageNumbers}>
@@ -476,14 +545,14 @@ export default function AdminBrandsPage() {
                 disabled={page === pageCount}
                 className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}
               >
-                <ChevronRight size={18} />
+                <ChevronRight size={16} />
               </button>
               <button
                 onClick={() => setPage(pageCount)}
                 disabled={page === pageCount}
                 className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}
               >
-                <ChevronsRight size={18} />
+                <ChevronsRight size={16} />
               </button>
             </div>
           </div>
