@@ -7,7 +7,6 @@ import {
   Edit,
   Image as ImageIcon,
   Search,
-  X,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -21,12 +20,8 @@ import {
   Download,
   Filter,
   ArrowUpDown,
-  Lightbulb,
-  BookOpen,
-  ListChecks,
-  Layers,
 } from "lucide-react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import NextImage from "next/image";
 import { getProductsAction } from "@/modules/products/actions/get-products.action";
 import { createProductAction } from "@/modules/products/actions/create-product.action";
@@ -37,6 +32,7 @@ import { deleteImageAction } from "@/modules/uploads/actions/delete-image.action
 import { getBrandsAction } from "@/modules/brands/actions/get-brands.action";
 import { getCategoriesAction } from "@/modules/categories/actions/get-categories.action";
 import { MetricsGrid } from "@/app/components";
+import ProductModal from "@/app/components/admin/ProductModal";
 import styles from "@/assets/css/admin/products.module.css";
 
 export default function AdminProductsPage() {
@@ -79,11 +75,6 @@ export default function AdminProductsPage() {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "variants",
-  });
-
   const watchedImage = watch("image");
   const formId = watch("id");
 
@@ -120,7 +111,7 @@ export default function AdminProductsPage() {
       },
       {
         title: "Preço Médio",
-        value: `R$ ${avgPrice.toFixed(2)}`,
+        value: `€ ${avgPrice.toFixed(2)}`,
         icon: <DollarSign size={28} />,
         color: "#10b981",
         bgColor: "rgba(16, 185, 129, 0.1)",
@@ -170,7 +161,6 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      // 🔥 IMPORTANTE: Adicionar includeVariants: true para carregar as variantes
       const result = await getProductsAction({ search, includeVariants: true });
       if (result.success) {
         setProducts(result.data);
@@ -230,7 +220,6 @@ export default function AdminProductsPage() {
         setUploading(false);
       }
 
-      // Processar variantes
       const variants = (data.variants || [])
         .filter(v => v.label && v.label.trim() !== '')
         .map(v => ({
@@ -290,7 +279,6 @@ export default function AdminProductsPage() {
         setUploading(false);
       }
 
-      // Processar variantes (incluindo IDs para edição)
       const variants = (data.variants || [])
         .filter(v => v.label && v.label.trim() !== '')
         .map(v => ({
@@ -375,7 +363,6 @@ export default function AdminProductsPage() {
   };
 
   const openEditModal = (product) => {
-    // Garantir que variants é um array
     const variantsArray = Array.isArray(product.variants) ? product.variants : [];
     
     reset({
@@ -411,7 +398,6 @@ export default function AdminProductsPage() {
     { value: -1, label: "Todos" },
   ];
 
-  // Função para exportar dados
   const handleExport = () => {
     const csvData = products.map(p => ({
       ID: p.id,
@@ -424,19 +410,15 @@ export default function AdminProductsPage() {
       Destaque: p.featured ? 'Sim' : 'Não'
     }));
     
-    const csv = [Object.keys(csvData[0]).join(','), ...csvData.map(row => Object.values(row).join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
+    const headers = Object.keys(csvData[0]);
+    const csv = [headers.join(','), ...csvData.map(row => headers.map(h => `"${row[h] || ''}"`).join(','))].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
     a.download = `produtos_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
-  };
-
-  // Adicionar variante
-  const addVariant = () => {
-    append({ label: "", quantity: 0, price: "" });
   };
 
   // Loading skeleton
@@ -464,19 +446,10 @@ export default function AdminProductsPage() {
         <div className={styles.toolbar}>
           <div className={styles.searchBar}>
             <Search size={16} className={styles.searchIcon} />
-            <input
-              type="text"
-              placeholder="Pesquisar por nome, ID ou categoria..."
-              className={styles.searchInput}
-              disabled
-            />
+            <input type="text" placeholder="Pesquisar..." className={styles.searchInput} disabled />
           </div>
-          <button className={styles.filterButton} disabled>
-            <Filter size={15} /> Filtros
-          </button>
-          <button className={styles.filterButton} disabled>
-            <ArrowUpDown size={15} /> Ordenar
-          </button>
+          <button className={styles.filterButton} disabled><Filter size={15} /> Filtros</button>
+          <button className={styles.filterButton} disabled><ArrowUpDown size={15} /> Ordenar</button>
         </div>
         <div className={styles.loadingContainer}>
           {[...Array(5)].map((_, i) => (
@@ -533,12 +506,8 @@ export default function AdminProductsPage() {
             className={styles.searchInput}
           />
         </div>
-        <button className={styles.filterButton}>
-          <Filter size={15} /> Filtros
-        </button>
-        <button className={styles.filterButton}>
-          <ArrowUpDown size={15} /> Ordenar
-        </button>
+        <button className={styles.filterButton}><Filter size={15} /> Filtros</button>
+        <button className={styles.filterButton}><ArrowUpDown size={15} /> Ordenar</button>
       </div>
 
       {/* Empty State */}
@@ -592,16 +561,12 @@ export default function AdminProductsPage() {
                       <div className={styles.productCell}>
                         <div>
                           <div className={styles.productName}>{product.name}</div>
-                          <div className={styles.productId}>
-                            #{product.id?.toString().slice(-8).toUpperCase()}
-                          </div>
+                          <div className={styles.productId}>#{product.id?.toString().slice(-8).toUpperCase()}</div>
                         </div>
                       </div>
                     </td>
                     <td className={styles.tableCell}>
-                      <span className={styles.priceText}>
-                        R$ {product.price?.toFixed(2)}
-                      </span>
+                      <span className={styles.priceText}>€ {product.price?.toFixed(2)}</span>
                     </td>
                     <td className={styles.tableCell}>
                       <span className={product.stockQuantity <= 5 ? styles.lowStock : ""}>
@@ -624,30 +589,15 @@ export default function AdminProductsPage() {
                       </span>
                     </td>
                     <td className={styles.tableCell}>
-                      {product.featured && (
-                        <span className={styles.featuredChip}>Destaque</span>
-                      )}
+                      {product.featured && <span className={styles.featuredChip}>Destaque</span>}
                     </td>
                     <td className={styles.tableCell}>
                       <div className={styles.actionButtons}>
-                        <button
-                          className={styles.editButton}
-                          onClick={() => openEditModal(product)}
-                          title="Editar"
-                        >
+                        <button className={styles.editButton} onClick={() => openEditModal(product)} title="Editar">
                           <Edit size={14} />
                         </button>
-                        <button
-                          className={styles.deleteButton}
-                          disabled={deletingId === product.id}
-                          onClick={() => handleDelete(product.id)}
-                          title="Excluir"
-                        >
-                          {deletingId === product.id ? (
-                            <div className={styles.spinner} />
-                          ) : (
-                            <Trash2 size={14} />
-                          )}
+                        <button className={styles.deleteButton} disabled={deletingId === product.id} onClick={() => handleDelete(product.id)} title="Excluir">
+                          {deletingId === product.id ? <div className={styles.spinner} /> : <Trash2 size={14} />}
                         </button>
                       </div>
                     </td>
@@ -676,59 +626,31 @@ export default function AdminProductsPage() {
                 ))}
               </select>
             </div>
-
             <div className={styles.footerRight}>
-              <button
-                onClick={() => setPage(1)}
-                disabled={page === 1}
-                className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}
-              >
+              <button onClick={() => setPage(1)} disabled={page === 1} className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}>
                 <ChevronsLeft size={16} />
               </button>
-              <button
-                onClick={() => setPage(page - 1)}
-                disabled={page === 1}
-                className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}
-              >
+              <button onClick={() => setPage(page - 1)} disabled={page === 1} className={`${styles.paginationButton} ${page === 1 ? styles.disabled : ""}`}>
                 <ChevronLeft size={16} />
               </button>
-
               <div className={styles.pageNumbers}>
                 {[...Array(Math.min(5, pageCount))].map((_, i) => {
                   let pageNum;
-                  if (pageCount <= 5) {
-                    pageNum = i + 1;
-                  } else if (page <= 3) {
-                    pageNum = i + 1;
-                  } else if (page >= pageCount - 2) {
-                    pageNum = pageCount - 4 + i;
-                  } else {
-                    pageNum = page - 2 + i;
-                  }
+                  if (pageCount <= 5) pageNum = i + 1;
+                  else if (page <= 3) pageNum = i + 1;
+                  else if (page >= pageCount - 2) pageNum = pageCount - 4 + i;
+                  else pageNum = page - 2 + i;
                   return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setPage(pageNum)}
-                      className={`${styles.pageNumber} ${page === pageNum ? styles.activePage : ""}`}
-                    >
+                    <button key={pageNum} onClick={() => setPage(pageNum)} className={`${styles.pageNumber} ${page === pageNum ? styles.activePage : ""}`}>
                       {pageNum}
                     </button>
                   );
                 })}
               </div>
-
-              <button
-                onClick={() => setPage(page + 1)}
-                disabled={page === pageCount}
-                className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}
-              >
+              <button onClick={() => setPage(page + 1)} disabled={page === pageCount} className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}>
                 <ChevronRight size={16} />
               </button>
-              <button
-                onClick={() => setPage(pageCount)}
-                disabled={page === pageCount}
-                className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}
-              >
+              <button onClick={() => setPage(pageCount)} disabled={page === pageCount} className={`${styles.paginationButton} ${page === pageCount ? styles.disabled : ""}`}>
                 <ChevronsRight size={16} />
               </button>
             </div>
@@ -736,230 +658,21 @@ export default function AdminProductsPage() {
         </>
       )}
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className={styles.modalOverlay} onClick={() => setIsModalOpen(false)}>
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div className={styles.modalHeader}>
-              <h2 className={styles.modalTitle}>
-                {formId ? "Editar Produto" : "Novo Produto"}
-              </h2>
-              <button className={styles.closeButton} onClick={() => setIsModalOpen(false)}>
-                <X size={20} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit(handleSubmitForm)} className={styles.modalForm}>
-              <div className={styles.formGrid}>
-                {/* Nome e Descrição */}
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>Nome</label>
-                  <input
-                    type="text"
-                    className={`${styles.formInput} ${errors.name ? styles.error : ""}`}
-                    {...register("name", { required: "Nome é obrigatório" })}
-                  />
-                  {errors.name && <span className={styles.errorMessage}>{errors.name.message}</span>}
-                </div>
-
-                <div className={styles.formFieldFull}>
-                  <label className={styles.formLabel}>Descrição</label>
-                  <textarea
-                    rows={3}
-                    className={`${styles.formTextarea} ${errors.description ? styles.error : ""}`}
-                    {...register("description")}
-                  />
-                </div>
-
-                {/* Preço e Estoque */}
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>Preço (R$)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    className={`${styles.formInput} ${errors.price ? styles.error : ""}`}
-                    {...register("price", {
-                      required: "Preço é obrigatório",
-                      min: { value: 0, message: "Preço deve ser maior que 0" },
-                    })}
-                  />
-                  {errors.price && <span className={styles.errorMessage}>{errors.price.message}</span>}
-                </div>
-
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>Estoque</label>
-                  <input
-                    type="number"
-                    className={`${styles.formInput} ${errors.stock ? styles.error : ""}`}
-                    {...register("stock", {
-                      required: "Estoque é obrigatório",
-                      min: { value: 0, message: "Estoque deve ser maior ou igual a 0" },
-                    })}
-                  />
-                  {errors.stock && <span className={styles.errorMessage}>{errors.stock.message}</span>}
-                </div>
-
-                {/* Imagem */}
-                <div className={styles.formFieldFull}>
-                  <label className={styles.formLabel}>Imagem</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className={styles.fileInput}
-                    onChange={(e) => setValue("image", e.target.files[0])}
-                  />
-                  {errors.image && <span className={styles.errorMessage}>{errors.image.message}</span>}
-                  {watchedImage && watchedImage instanceof File && (
-                    <p className={styles.fileInfo}>
-                      {watchedImage.name} ({(watchedImage.size / 1024 / 1024).toFixed(2)} MB)
-                    </p>
-                  )}
-                  {typeof watchedImage === "string" && watchedImage && (
-                    <div className={styles.imagePreview}>
-                      <NextImage
-                        src={watchedImage}
-                        alt="Preview"
-                        width={60}
-                        height={60}
-                        className={styles.previewImage}
-                      />
-                      <span>Imagem atual</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Marca e Categoria */}
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>Marca</label>
-                  <select className={styles.formSelect} {...register("brandId")}>
-                    <option value="">Selecione uma marca</option>
-                    {brands.map((brand) => (
-                      <option key={brand.id} value={brand.id}>
-                        {brand.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>Categoria</label>
-                  <select className={styles.formSelect} {...register("categoryId")}>
-                    <option value="">Selecione uma categoria</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Novos Campos: Dica, Modo de Uso, Ingredientes */}
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>
-                    <Lightbulb size={14} className={styles.inlineIcon} /> Dica do Especialista
-                  </label>
-                  <textarea
-                    rows={2}
-                    className={styles.formTextarea}
-                    {...register("hint")}
-                    placeholder="Ex: Misture gradualmente com a ração anterior..."
-                  />
-                </div>
-
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>
-                    <BookOpen size={14} className={styles.inlineIcon} /> Modo de Uso
-                  </label>
-                  <textarea
-                    rows={2}
-                    className={styles.formTextarea}
-                    {...register("howUse")}
-                    placeholder="Ex: Servir 200g por dia para cães de porte médio..."
-                  />
-                </div>
-
-                <div className={styles.formFieldFull}>
-                  <label className={styles.formLabel}>
-                    <ListChecks size={14} className={styles.inlineIcon} /> Ingredientes
-                  </label>
-                  <textarea
-                    rows={3}
-                    className={styles.formTextarea}
-                    {...register("ingredients")}
-                    placeholder="Ex: Frango desidratado, arroz, milho, vitaminas..."
-                  />
-                </div>
-
-                {/* Variantes */}
-                <div className={styles.formFieldFull}>
-                  <label className={styles.formLabel}>
-                    <Layers size={14} className={styles.inlineIcon} /> Variantes (tamanhos, pesos, cores)
-                  </label>
-                  <div className={styles.variantsSection}>
-                    {fields.map((field, index) => (
-                      <div key={field.id} className={styles.variantRow}>
-                        <input
-                          type="text"
-                          placeholder="Label (ex: 1kg, P, Azul)"
-                          className={styles.variantInput}
-                          {...register(`variants.${index}.label`)}
-                        />
-                        <input
-                          type="number"
-                          placeholder="Estoque"
-                          className={styles.variantInput}
-                          {...register(`variants.${index}.quantity`, { valueAsNumber: true })}
-                        />
-                        <input
-                          type="number"
-                          step="0.01"
-                          placeholder="Preço"
-                          className={styles.variantInput}
-                          {...register(`variants.${index}.price`, { valueAsNumber: true })}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => remove(index)}
-                          className={styles.removeVariantBtn}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    ))}
-                    <button type="button" onClick={addVariant} className={styles.addVariantBtn}>
-                      <Plus size={16} /> Adicionar variante
-                    </button>
-                  </div>
-                </div>
-
-                {/* Status */}
-                <div className={styles.formFieldCheckbox}>
-                  <label className={styles.checkboxLabel}>
-                    <input type="checkbox" {...register("active")} />
-                    <span>Ativo</span>
-                  </label>
-                </div>
-
-                <div className={styles.formFieldCheckbox}>
-                  <label className={styles.checkboxLabel}>
-                    <input type="checkbox" {...register("featured")} />
-                    <span>Em Destaque</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className={styles.modalFooter}>
-                <button type="button" className={styles.cancelButton} onClick={() => setIsModalOpen(false)}>
-                  Cancelar
-                </button>
-                <button type="submit" className={styles.saveButton} disabled={isSubmitting || uploading}>
-                  {isSubmitting || uploading ? "Salvando..." : "Salvar"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <ProductModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        formId={formId}
+        register={register}
+        errors={errors}
+        control={control}
+        watchedImage={watchedImage}
+        brands={brands}
+        categories={categories}
+        isSubmitting={isSubmitting}
+        uploading={uploading}
+        handleSubmit={handleSubmit}
+        onSubmit={handleSubmitForm}
+      />
     </div>
   );
 }

@@ -207,8 +207,6 @@ export default function AdminSettingsPage() {
                   className={styles.formSelect}
                 >
                   <option value="EUR">Euro (€)</option>
-                  <option value="BRL">Real (R$)</option>
-                  <option value="USD">Dólar ($)</option>
                 </select>
               </div>
               <div className={styles.formField}>

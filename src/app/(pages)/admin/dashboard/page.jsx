@@ -18,11 +18,15 @@ import {
   List,
   RefreshCw,
 } from "lucide-react";
+import { useForm } from "react-hook-form";
 import styles from "../../../../assets/css/admin/dashboard.module.css";
 import { useSession } from "next-auth/react";
 import { getProductsAction } from "@/modules/products/actions/get-products.action";
+import { createProductAction } from "@/modules/products/actions/create-product.action";
 import { getCategoriesAction } from "@/modules/categories/actions/get-categories.action";
 import { getBrandsAction } from "@/modules/brands/actions/get-brands.action";
+import { uploadImageAction } from "@/modules/uploads/actions/upload-image.action";
+import ProductModal from "@/app/components/admin/ProductModal";
 import Link from "next/link";
 
 export default function DashboardClient() {
@@ -32,14 +36,47 @@ export default function DashboardClient() {
   const [brands, setBrands] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    defaultValues: {
+      id: "",
+      name: "",
+      description: "",
+      price: "",
+      stock: "",
+      image: "",
+      brandId: "",
+      categoryId: "",
+      active: true,
+      featured: false,
+      oldImage: "",
+      hint: "",
+      howUse: "",
+      ingredients: "",
+      variants: [],
+    },
+  });
+
+  const watchedImage = watch("image");
+  const formId = watch("id");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [productsResult, categoriesResult, brandsResult] = await Promise.all([
-          getProductsAction({}),
-          getCategoriesAction({}),
-          getBrandsAction({}),
+          getProductsAction({ includeVariants: true }),
+          getCategoriesAction(),
+          getBrandsAction(),
         ]);
 
         if (productsResult.success) setProducts(productsResult.data);
@@ -77,7 +114,7 @@ export default function DashboardClient() {
       icon: Package,
       color: "#2c694e",
       bgColor: "rgba(44, 105, 78, 0.1)",
-      trend: "+12% este mês",
+      trend: `${totalProducts} produtos cadastrados`,
       link: "/admin/products",
     },
     {
@@ -100,7 +137,7 @@ export default function DashboardClient() {
     },
     {
       title: "Preço Médio",
-      value: `R$ ${avgPrice.toFixed(2)}`,
+      value: `€ ${avgPrice.toFixed(2)}`,
       icon: DollarSign,
       color: "#10b981",
       bgColor: "rgba(16, 185, 129, 0.1)",
@@ -126,6 +163,89 @@ export default function DashboardClient() {
       link: "/admin/brands",
     },
   ];
+
+  const resetForm = () => {
+    reset({
+      id: "",
+      name: "",
+      description: "",
+      price: "",
+      stock: "",
+      image: "",
+      brandId: "",
+      categoryId: "",
+      active: true,
+      featured: false,
+      oldImage: "",
+      hint: "",
+      howUse: "",
+      ingredients: "",
+      variants: [],
+    });
+  };
+
+  const handleSubmitCreate = async (data) => {
+    try {
+      let imageUrl = data.image;
+      
+      if (data.image instanceof File) {
+        setUploading(true);
+        const formData = new FormData();
+        formData.append("image", data.image);
+        formData.append("type", "product");
+        const uploadResult = await uploadImageAction(formData);
+        if (uploadResult.success) {
+          imageUrl = uploadResult.data.url;
+        } else {
+          throw new Error(uploadResult.error);
+        }
+        setUploading(false);
+      }
+
+      const variants = (data.variants || [])
+        .filter(v => v.label && v.label.trim() !== '')
+        .map(v => ({
+          label: v.label.trim(),
+          quantity: parseInt(v.quantity) || 0,
+          price: parseFloat(v.price) || 0,
+        }));
+
+      const productData = {
+        name: data.name,
+        description: data.description,
+        price: parseFloat(data.price),
+        stockQuantity: parseInt(data.stock),
+        image: imageUrl,
+        active: data.active === true || data.active === "true",
+        featured: data.featured === true || data.featured === "true",
+        brandId: data.brandId,
+        categoryId: data.categoryId,
+        hint: data.hint || "",
+        howUse: data.howUse || "",
+        ingredients: data.ingredients || "",
+        variants: variants,
+      };
+
+      const result = await createProductAction(productData);
+      if (result.success) {
+        resetForm();
+        setIsModalOpen(false);
+        // Recarregar produtos
+        const productsResult = await getProductsAction({ includeVariants: true });
+        if (productsResult.success) setProducts(productsResult.data);
+      } else {
+        throw new Error(result.error);
+      }
+    } catch (error) {
+      console.error("Error creating product:", error);
+      alert(error.message);
+    }
+  };
+
+  const openCreateModal = () => {
+    resetForm();
+    setIsModalOpen(true);
+  };
 
   if (loading) {
     return (
@@ -182,19 +302,19 @@ export default function DashboardClient() {
       <div className={styles.quickActions}>
         <h3 className={styles.sectionTitle}>Ações Rápidas</h3>
         <div className={styles.actionGrid}>
-          <Link href="/admin/products/new" className={styles.actionCard}>
+          <button onClick={openCreateModal} className={styles.actionCard}>
             <PlusCircle size={20} />
             <span>Novo Produto</span>
             <ArrowRight size={16} className={styles.actionArrow} />
-          </Link>
-          <Link href="/admin/categories/new" className={styles.actionCard}>
+          </button>
+          <Link href="/admin/categories" className={styles.actionCard}>
             <FolderTree size={20} />
-            <span>Nova Categoria</span>
+            <span>Gerenciar Categorias</span>
             <ArrowRight size={16} className={styles.actionArrow} />
           </Link>
-          <Link href="/admin/brands/new" className={styles.actionCard}>
+          <Link href="/admin/brands" className={styles.actionCard}>
             <Tag size={20} />
-            <span>Nova Marca</span>
+            <span>Gerenciar Marcas</span>
             <ArrowRight size={16} className={styles.actionArrow} />
           </Link>
           <Link href="/admin/products" className={styles.actionCard}>
@@ -275,7 +395,7 @@ export default function DashboardClient() {
                         </div>
                       </div>
                     </td>
-                    <td className={styles.priceCell}>R$ {product.price?.toFixed(2)}</td>
+                    <td className={styles.priceCell}>€ {product.price?.toFixed(2)}</td>
                     <td>
                       <span className={`${styles.stockChip} ${product.stockQuantity <= 5 ? styles.lowStock : ''}`}>
                         {product.stockQuantity} unid.
@@ -304,6 +424,23 @@ export default function DashboardClient() {
           {brands.filter(b => b.products?.length > 0).length} marcas com produtos
         </p>
       </div>
+
+      {/* Product Modal */}
+      <ProductModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        formId={formId}
+        register={register}
+        errors={errors}
+        control={control}
+        watchedImage={watchedImage}
+        brands={brands}
+        categories={categories}
+        isSubmitting={isSubmitting}
+        uploading={uploading}
+        handleSubmit={handleSubmit}
+        onSubmit={handleSubmitCreate}
+      />
     </div>
   );
 }

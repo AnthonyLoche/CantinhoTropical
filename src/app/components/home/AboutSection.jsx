@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Star, StarHalf, ArrowRight } from "lucide-react";
 import styles from "../../../assets/css/home/AboutSection.module.css";
+import about from "@/assets/images/about.png";
 
 export default function AboutSection() {
   return (
@@ -11,7 +12,7 @@ export default function AboutSection() {
           <div className={styles.glow} />
           <div className={styles.imageContainer}>
             <Image
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDn2Mg7USeJZJgyZKI99rDmnv5gjvW4Q5PMXMenUdeUDUMzCBp1cFhS90ypEI8uvLWsS4RH0-d2w74N0qB6fGuyZtEb5mNMUc8_r92mhhOzmoby4bmlP-_oSpI8DtcsOHQ6LNqz7BYS8QFw54YQTGM8_uv-CpQCf8Yb8Zk7Wn3BaHMNaxFLtHZq7xDxJ7fL8qdkk7F6cbkeZCGtmeW3lSKeBREou01-J4BJ6ikVfa9uMnB3UPbCwYXFsoEg3Z9MumTANYIMPv73tx4"
+              src={about}
               alt="Fachada Cantinho Tropical Mafra"
               width={800}
               height={600}
