@@ -21,8 +21,12 @@ import {
   Download,
   Filter,
   ArrowUpDown,
+  Lightbulb,
+  BookOpen,
+  ListChecks,
+  Layers,
 } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import NextImage from "next/image";
 import { getProductsAction } from "@/modules/products/actions/get-products.action";
 import { createProductAction } from "@/modules/products/actions/create-product.action";
@@ -53,6 +57,7 @@ export default function AdminProductsPage() {
     reset,
     watch,
     setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -67,7 +72,16 @@ export default function AdminProductsPage() {
       active: true,
       featured: false,
       oldImage: "",
+      hint: "",
+      howUse: "",
+      ingredients: "",
+      variants: [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "variants",
   });
 
   const watchedImage = watch("image");
@@ -156,7 +170,8 @@ export default function AdminProductsPage() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const result = await getProductsAction({ search });
+      // 🔥 IMPORTANTE: Adicionar includeVariants: true para carregar as variantes
+      const result = await getProductsAction({ search, includeVariants: true });
       if (result.success) {
         setProducts(result.data);
       }
@@ -215,6 +230,15 @@ export default function AdminProductsPage() {
         setUploading(false);
       }
 
+      // Processar variantes
+      const variants = (data.variants || [])
+        .filter(v => v.label && v.label.trim() !== '')
+        .map(v => ({
+          label: v.label.trim(),
+          quantity: parseInt(v.quantity) || 0,
+          price: parseFloat(v.price) || 0,
+        }));
+
       const productData = {
         name: data.name,
         description: data.description,
@@ -225,6 +249,10 @@ export default function AdminProductsPage() {
         featured: data.featured === true || data.featured === "true",
         brandId: data.brandId,
         categoryId: data.categoryId,
+        hint: data.hint || "",
+        howUse: data.howUse || "",
+        ingredients: data.ingredients || "",
+        variants: variants,
       };
 
       const result = await createProductAction(productData);
@@ -262,6 +290,16 @@ export default function AdminProductsPage() {
         setUploading(false);
       }
 
+      // Processar variantes (incluindo IDs para edição)
+      const variants = (data.variants || [])
+        .filter(v => v.label && v.label.trim() !== '')
+        .map(v => ({
+          id: v.id,
+          label: v.label.trim(),
+          quantity: parseInt(v.quantity) || 0,
+          price: parseFloat(v.price) || 0,
+        }));
+
       const productData = {
         id: data.id,
         name: data.name,
@@ -273,6 +311,10 @@ export default function AdminProductsPage() {
         featured: data.featured === true || data.featured === "true",
         brandId: data.brandId,
         categoryId: data.categoryId,
+        hint: data.hint || "",
+        howUse: data.howUse || "",
+        ingredients: data.ingredients || "",
+        variants: variants,
       };
 
       const result = await updateProductAction(productData);
@@ -320,6 +362,10 @@ export default function AdminProductsPage() {
       active: true,
       featured: false,
       oldImage: "",
+      hint: "",
+      howUse: "",
+      ingredients: "",
+      variants: [],
     });
   };
 
@@ -329,6 +375,9 @@ export default function AdminProductsPage() {
   };
 
   const openEditModal = (product) => {
+    // Garantir que variants é um array
+    const variantsArray = Array.isArray(product.variants) ? product.variants : [];
+    
     reset({
       id: product.id,
       name: product.name,
@@ -341,6 +390,15 @@ export default function AdminProductsPage() {
       active: product.active,
       featured: product.featured,
       oldImage: product.imageUrl || product.image || "",
+      hint: product.hint || "",
+      howUse: product.howUse || "",
+      ingredients: product.ingredients || "",
+      variants: variantsArray.map(v => ({
+        id: v.id,
+        label: v.label,
+        quantity: v.quantity,
+        price: v.price,
+      })),
     });
     setIsModalOpen(true);
   };
@@ -374,6 +432,11 @@ export default function AdminProductsPage() {
     a.download = `produtos_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  // Adicionar variante
+  const addVariant = () => {
+    append({ label: "", quantity: 0, price: "" });
   };
 
   // Loading skeleton
@@ -530,7 +593,7 @@ export default function AdminProductsPage() {
                         <div>
                           <div className={styles.productName}>{product.name}</div>
                           <div className={styles.productId}>
-                            #{product.id?.toString().toUpperCase()}
+                            #{product.id?.toString().slice(-8).toUpperCase()}
                           </div>
                         </div>
                       </div>
@@ -688,6 +751,7 @@ export default function AdminProductsPage() {
 
             <form onSubmit={handleSubmit(handleSubmitForm)} className={styles.modalForm}>
               <div className={styles.formGrid}>
+                {/* Nome e Descrição */}
                 <div className={styles.formField}>
                   <label className={styles.formLabel}>Nome</label>
                   <input
@@ -707,6 +771,7 @@ export default function AdminProductsPage() {
                   />
                 </div>
 
+                {/* Preço e Estoque */}
                 <div className={styles.formField}>
                   <label className={styles.formLabel}>Preço (R$)</label>
                   <input
@@ -734,6 +799,7 @@ export default function AdminProductsPage() {
                   {errors.stock && <span className={styles.errorMessage}>{errors.stock.message}</span>}
                 </div>
 
+                {/* Imagem */}
                 <div className={styles.formFieldFull}>
                   <label className={styles.formLabel}>Imagem</label>
                   <input
@@ -762,12 +828,10 @@ export default function AdminProductsPage() {
                   )}
                 </div>
 
+                {/* Marca e Categoria */}
                 <div className={styles.formField}>
                   <label className={styles.formLabel}>Marca</label>
-                  <select
-                    className={styles.formSelect}
-                    {...register("brandId")}
-                  >
+                  <select className={styles.formSelect} {...register("brandId")}>
                     <option value="">Selecione uma marca</option>
                     {brands.map((brand) => (
                       <option key={brand.id} value={brand.id}>
@@ -779,10 +843,7 @@ export default function AdminProductsPage() {
 
                 <div className={styles.formField}>
                   <label className={styles.formLabel}>Categoria</label>
-                  <select
-                    className={styles.formSelect}
-                    {...register("categoryId")}
-                  >
+                  <select className={styles.formSelect} {...register("categoryId")}>
                     <option value="">Selecione uma categoria</option>
                     {categories.map((category) => (
                       <option key={category.id} value={category.id}>
@@ -792,6 +853,86 @@ export default function AdminProductsPage() {
                   </select>
                 </div>
 
+                {/* Novos Campos: Dica, Modo de Uso, Ingredientes */}
+                <div className={styles.formField}>
+                  <label className={styles.formLabel}>
+                    <Lightbulb size={14} className={styles.inlineIcon} /> Dica do Especialista
+                  </label>
+                  <textarea
+                    rows={2}
+                    className={styles.formTextarea}
+                    {...register("hint")}
+                    placeholder="Ex: Misture gradualmente com a ração anterior..."
+                  />
+                </div>
+
+                <div className={styles.formField}>
+                  <label className={styles.formLabel}>
+                    <BookOpen size={14} className={styles.inlineIcon} /> Modo de Uso
+                  </label>
+                  <textarea
+                    rows={2}
+                    className={styles.formTextarea}
+                    {...register("howUse")}
+                    placeholder="Ex: Servir 200g por dia para cães de porte médio..."
+                  />
+                </div>
+
+                <div className={styles.formFieldFull}>
+                  <label className={styles.formLabel}>
+                    <ListChecks size={14} className={styles.inlineIcon} /> Ingredientes
+                  </label>
+                  <textarea
+                    rows={3}
+                    className={styles.formTextarea}
+                    {...register("ingredients")}
+                    placeholder="Ex: Frango desidratado, arroz, milho, vitaminas..."
+                  />
+                </div>
+
+                {/* Variantes */}
+                <div className={styles.formFieldFull}>
+                  <label className={styles.formLabel}>
+                    <Layers size={14} className={styles.inlineIcon} /> Variantes (tamanhos, pesos, cores)
+                  </label>
+                  <div className={styles.variantsSection}>
+                    {fields.map((field, index) => (
+                      <div key={field.id} className={styles.variantRow}>
+                        <input
+                          type="text"
+                          placeholder="Label (ex: 1kg, P, Azul)"
+                          className={styles.variantInput}
+                          {...register(`variants.${index}.label`)}
+                        />
+                        <input
+                          type="number"
+                          placeholder="Estoque"
+                          className={styles.variantInput}
+                          {...register(`variants.${index}.quantity`, { valueAsNumber: true })}
+                        />
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="Preço"
+                          className={styles.variantInput}
+                          {...register(`variants.${index}.price`, { valueAsNumber: true })}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => remove(index)}
+                          className={styles.removeVariantBtn}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                    <button type="button" onClick={addVariant} className={styles.addVariantBtn}>
+                      <Plus size={16} /> Adicionar variante
+                    </button>
+                  </div>
+                </div>
+
+                {/* Status */}
                 <div className={styles.formFieldCheckbox}>
                   <label className={styles.checkboxLabel}>
                     <input type="checkbox" {...register("active")} />

@@ -1,2 +1,4 @@
 export { createProductSchema } from './create-product.validation.js';
 export { updateProductSchema } from './update-product.validation.js';
+export { variantSchema } from './create-product.validation.js';
+export { updateVariantSchema } from './update-product.validation.js';

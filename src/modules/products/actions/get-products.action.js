@@ -9,9 +9,16 @@ import { prisma } from '@/lib/prisma';
  * @param {string} params.categoryId - Filter by category
  * @param {string} params.brandId - Filter by brand
  * @param {boolean} params.activeOnly - Only show active products (default: true)
+ * @param {boolean} params.includeVariants - Include product variants (default: false)
  * @returns {Promise<Object>} Result with success/error and products array
  */
-export async function getProductsAction({ search = '', categoryId = null, brandId = null, activeOnly = true } = {}) {
+export async function getProductsAction({ 
+  search = '', 
+  categoryId = null, 
+  brandId = null, 
+  activeOnly = true,
+  includeVariants = false,
+} = {}) {
   try {
     // Build where clause
     const where = {
@@ -42,25 +49,33 @@ export async function getProductsAction({ search = '', categoryId = null, brandI
       include: {
         brand: true,
         category: true,
+        ...(includeVariants && { variants: true }),
       },
       orderBy: {
         createdAt: 'desc',
       },
     });
 
-    // 🔥 Converter Decimal para number e extrair IDs dos relacionamentos
+    // Serializar os dados
     const serializedProducts = products.map((product) => ({
       id: product.id,
       name: product.name,
       description: product.description,
-      price: Number(product.price), // Converter Decimal para number
+      price: Number(product.price),
       stockQuantity: product.stockQuantity,
       imageUrl: product.imageUrl,
       active: product.active,
       featured: product.featured,
+      
+      // Novos campos
+      hint: product.hint || "",
+      howUse: product.how_use || "",
+      ingredients: product.ingredients || "",
+      
       brandId: product.brandId,
       categoryId: product.categoryId,
-      // Manter os objetos relacionados se necessário
+      
+      // Objetos relacionados
       brand: product.brand ? {
         id: product.brand.id,
         name: product.brand.name,
@@ -72,6 +87,15 @@ export async function getProductsAction({ search = '', categoryId = null, brandI
         description: product.category.description,
         imageUrl: product.category.imageUrl,
       } : null,
+      
+      // Variantes (se solicitado)
+      variants: includeVariants && product.variants ? product.variants.map(variant => ({
+        id: variant.id,
+        label: variant.label,
+        quantity: variant.quantity,
+        price: Number(variant.price),
+      })) : [],
+      
       createdAt: product.createdAt?.toISOString(),
       updatedAt: product.updatedAt?.toISOString(),
     }));

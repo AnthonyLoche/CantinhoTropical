@@ -17,6 +17,10 @@ import { uploadProductImage } from '@/modules/uploads/services/upload.service.js
  * @param {boolean} data.featured - Product featured status
  * @param {string} data.brandId - Brand ID
  * @param {string} data.categoryId - Category ID
+ * @param {string} data.hint - Specialist tip (optional)
+ * @param {string} data.howUse - How to use instructions (optional)
+ * @param {string} data.ingredients - Ingredients list (optional)
+ * @param {Array} data.variants - Product variants (optional) - each with { label, quantity, price }
  * @returns {Promise<Object>} Result object with success/error
  */
 export async function createProductAction(data) {
@@ -62,7 +66,7 @@ export async function createProductAction(data) {
       console.error('❌ No image provided. Received data:', data);
       return {
         success: false,
-        error: 'Image is required for product creation',
+        error: 'Imagem é obrigatória para criar o produto',
       };
     }
 
@@ -70,34 +74,56 @@ export async function createProductAction(data) {
     if (!data.name || data.name.trim() === '') {
       return {
         success: false,
-        error: 'Product name is required',
+        error: 'Nome do produto é obrigatório',
       };
     }
 
     if (!data.price) {
       return {
         success: false,
-        error: 'Product price is required',
+        error: 'Preço do produto é obrigatório',
       };
     }
 
     // 🔥 IMPORTANTE: Usar stockQuantity em vez de stock
     const stockValue = data.stockQuantity !== undefined ? data.stockQuantity : data.stock;
     
-    // Prepare product data
+    // Processar variantes
+    let variants = [];
+    if (data.variants && Array.isArray(data.variants) && data.variants.length > 0) {
+      variants = data.variants
+        .filter(v => v.label && v.label.trim() !== '') // Filtrar variantes sem label
+        .map(v => ({
+          label: v.label.trim(),
+          quantity: parseInt(v.quantity) || 0,
+          price: parseFloat(v.price) || 0,
+        }));
+      console.log(`📦 Processing ${variants.length} variants`);
+    }
+    
+    // Prepare product data com os novos campos
     const productData = {
       name: data.name.trim(),
       description: data.description || '',
       price: parseFloat(data.price),
-      stockQuantity: parseInt(stockValue) || 0, // ← Mudado de 'stock' para 'stockQuantity'
+      stockQuantity: parseInt(stockValue) || 0,
       imageUrl: imageUrl,
       active: data.active === true || data.active === 'true',
       featured: data.featured === true || data.featured === 'true',
       brandId: data.brandId,
       categoryId: data.categoryId,
+      // Novos campos
+      hint: data.hint || '',
+      howUse: data.howUse || '',
+      ingredients: data.ingredients || '',
+      // Variantes
+      variants: variants,
     };
 
-    console.log('📤 Sending to ProductService:', productData);
+    console.log('📤 Sending to ProductService:', {
+      ...productData,
+      variants: productData.variants.length,
+    });
 
     const productService = new ProductService();
     const product = await productService.createProduct(productData);
@@ -107,13 +133,13 @@ export async function createProductAction(data) {
     return {
       success: true,
       data: product,
-      message: 'Product created successfully',
+      message: 'Produto criado com sucesso!',
     };
   } catch (error) {
     console.error('❌ Error creating product:', error);
     return {
       success: false,
-      error: error.message || 'Failed to create product',
+      error: error.message || 'Erro ao criar produto',
     };
   }
 }

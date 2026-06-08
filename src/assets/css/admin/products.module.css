@@ -852,3 +852,95 @@
     justify-content: center;
   }
 }
+
+/* Variantes */
+.variantsSection {
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--surface-container-low);
+  margin-top: 4px;
+}
+
+.variantRow {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.variantInput {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 12px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 13px;
+}
+
+.variantInput:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.removeVariantBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--error);
+  transition: all 0.2s;
+}
+
+.removeVariantBtn:hover {
+  background: rgba(186, 26, 26, 0.1);
+  border-color: var(--error);
+}
+
+.addVariantBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px dashed var(--primary);
+  border-radius: 8px;
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.addVariantBtn:hover {
+  background: rgba(1, 38, 31, 0.05);
+  gap: 12px;
+}
+
+.inlineIcon {
+  display: inline;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* Responsive para variantes */
+@media (max-width: 768px) {
+  .variantRow {
+    flex-direction: column;
+  }
+  
+  .variantInput {
+    width: 100%;
+  }
+  
+  .removeVariantBtn {
+    align-self: flex-end;
+  }
+}

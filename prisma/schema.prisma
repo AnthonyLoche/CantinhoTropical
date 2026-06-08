@@ -54,12 +54,28 @@ model Product {
 
   featured        Boolean   @default(false)
 
+  hint             String? @default("")
+  how_use          String? @default("")
+  ingredients       String? @default("")
+
   brandId         String
   categoryId      String
 
   brand           Brand     @relation(fields: [brandId], references: [id], onDelete: Cascade)
   category        Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
+  variants       ProductVariants[]
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+model ProductVariants {
+  id         String    @id @default(cuid())
+  label        String
+  quantity     Int       @default(0)
+  price        Decimal   @db.Decimal(10,2)
+
+  productId    String
+  product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 }

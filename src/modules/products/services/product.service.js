@@ -1,89 +1,63 @@
+import { prisma } from '@/lib/prisma';
 import { ProductRepository } from '../repositories/product.repository.js';
 import { ProductDTO } from '../dtos/product.dto.js';
-import { z } from 'zod';
-import { createProductSchema, updateProductSchema } from '../validations/index.js';
+import { 
+  createProductSchema, 
+  updateProductSchema,
+  variantSchema,
+  updateVariantSchema,
+} from '../validations/index.js';
 
-/**
- * Product Service
- * Contains business logic for Product operations
- */
 export class ProductService {
   constructor() {
     this.repository = new ProductRepository();
   }
 
-  /**
-   * Get a product by ID
-   * @param {string} id - Product ID
-   * @returns {Promise<Object|null>} Formatted product data or null
-   */
   async getProductById(id) {
     const product = await this.repository.findById(id);
     return ProductDTO.format(product);
   }
 
-  /**
-   * Get all products with optional filtering
-   * @param {Object} options - Filter and pagination options
-   * @returns {Promise<Array>} Array of formatted product objects
-   */
   async getProducts(options = {}) {
     const products = await this.repository.findAll(options);
     return ProductDTO.formatMany(products);
   }
 
-  /**
-   * Create a new product
-   * @param {Object} data - Product data
-   * @param {string} data.name - Product name
-   * @param {string} data.description - Product description (optional)
-   * @param {number} data.price - Product price
-   * @param {number} data.stockQuantity - Product stock quantity
-   * @param {string} data.imageUrl - Product image URL
-   * @param {boolean} data.active - Product active status
-   * @param {boolean} data.featured - Product featured status
-   * @param {string} data.brandId - Brand ID
-   * @param {string} data.categoryId - Category ID
-   * @returns {Promise<Object>} Created product data
-   * @throws {z.ZodError} If validation fails
-   */
   async createProduct(data) {
     // Validate input
     const validatedData = createProductSchema.parse(data);
 
-    // Check if brand exists
-    const brandExists = await this._checkBrandExists(validatedData.brandId);
-    if (!brandExists) {
-      throw new Error('Brand not found');
-    }
+    // Check brand and category
+    await this._checkBrandAndCategory(validatedData.brandId, validatedData.categoryId);
 
-    // Check if category exists
-    const categoryExists = await this._checkCategoryExists(validatedData.categoryId);
-    if (!categoryExists) {
-      throw new Error('Category not found');
-    }
+    // Prepare product data
+    const productData = {
+      name: validatedData.name,
+      description: validatedData.description || '',
+      price: validatedData.price,
+      stockQuantity: validatedData.stockQuantity || 0,
+      imageUrl: validatedData.imageUrl,
+      active: validatedData.active !== undefined ? validatedData.active : true,
+      featured: validatedData.featured !== undefined ? validatedData.featured : false,
+      hint: validatedData.hint || '',
+      how_use: validatedData.howUse || '',
+      ingredients: validatedData.ingredients || '',
+      brandId: validatedData.brandId,
+      categoryId: validatedData.categoryId,
+    };
+
+    // Prepare variants
+    const variants = validatedData.variants?.map(v => ({
+      label: v.label,
+      quantity: v.quantity || 0,
+      price: v.price,
+    })) || [];
 
     // Create product
-    const product = await this.repository.create(validatedData);
+    const product = await this.repository.create(productData, variants);
     return ProductDTO.format(product);
   }
 
-  /**
-   * Update an existing product
-   * @param {string} id - Product ID
-   * @param {Object} data - Data to update
-   * @param {string} data.name - Product name
-   * @param {string} data.description - Product description (optional)
-   * @param {number} data.price - Product price
-   * @param {number} data.stockQuantity - Product stock quantity
-   * @param {string} data.imageUrl - Product image URL
-   * @param {boolean} data.active - Product active status
-   * @param {boolean} data.featured - Product featured status
-   * @param {string} data.brandId - Brand ID
-   * @param {string} data.categoryId - Category ID
-   * @returns {Promise<Object>} Updated product data
-   * @throws {z.ZodError} If validation fails
-   */
   async updateProduct(id, data) {
     // Validate input
     const validatedData = updateProductSchema.parse(data);
@@ -94,71 +68,100 @@ export class ProductService {
       throw new Error('Product not found');
     }
 
-    // If brandId is being updated, check if new brand exists
-    if (validatedData.brandId && validatedData.brandId !== existingProduct.brandId) {
-      const brandExists = await this._checkBrandExists(validatedData.brandId);
-      if (!brandExists) {
-        throw new Error('Brand not found');
-      }
+    // Check brand and category if changed
+    if (validatedData.brandId || validatedData.categoryId) {
+      await this._checkBrandAndCategory(
+        validatedData.brandId || existingProduct.brandId,
+        validatedData.categoryId || existingProduct.categoryId
+      );
     }
 
-    // If categoryId is being updated, check if new category exists
-    if (validatedData.categoryId && validatedData.categoryId !== existingProduct.categoryId) {
-      const categoryExists = await this._checkCategoryExists(validatedData.categoryId);
-      if (!categoryExists) {
-        throw new Error('Category not found');
-      }
+    // Prepare update data
+    const updateData = {};
+    if (validatedData.name !== undefined) updateData.name = validatedData.name;
+    if (validatedData.description !== undefined) updateData.description = validatedData.description;
+    if (validatedData.price !== undefined) updateData.price = validatedData.price;
+    if (validatedData.stockQuantity !== undefined) updateData.stockQuantity = validatedData.stockQuantity;
+    if (validatedData.imageUrl !== undefined) updateData.imageUrl = validatedData.imageUrl;
+    if (validatedData.active !== undefined) updateData.active = validatedData.active;
+    if (validatedData.featured !== undefined) updateData.featured = validatedData.featured;
+    if (validatedData.hint !== undefined) updateData.hint = validatedData.hint;
+    if (validatedData.howUse !== undefined) updateData.how_use = validatedData.howUse;
+    if (validatedData.ingredients !== undefined) updateData.ingredients = validatedData.ingredients;
+    if (validatedData.brandId !== undefined) updateData.brandId = validatedData.brandId;
+    if (validatedData.categoryId !== undefined) updateData.categoryId = validatedData.categoryId;
+
+    // Prepare variants
+    let variants = null;
+    if (validatedData.variants !== undefined) {
+      variants = validatedData.variants.map(v => ({
+        id: v.id,
+        label: v.label,
+        quantity: v.quantity || 0,
+        price: v.price,
+      }));
     }
 
     // Update product
-    const product = await this.repository.update(id, validatedData);
+    const product = await this.repository.update(id, updateData, variants);
     return ProductDTO.format(product);
   }
 
-  /**
-   * Delete a product by ID
-   * @param {string} id - Product ID
-   * @returns {Promise<Object>} Deleted product data
-   */
   async deleteProduct(id) {
-    // Check if product exists
     const existingProduct = await this.repository.findById(id);
     if (!existingProduct) {
       throw new Error('Product not found');
     }
 
-    // Delete product
-    const product = await this.repository.delete(id);
-    return ProductDTO.format(product);
+    return await this.repository.delete(id);
   }
 
-  /**
-   * Helper method to check if brand exists
-   * @private
-   * @param {string} brandId - Brand ID
-   * @returns {Promise<boolean>} True if brand exists
-   */
-  async _checkBrandExists(brandId) {
-    // This would ideally use a BrandRepository, but to avoid circular dependencies
-    // and keep the service focused on its own domain, we'll use Prisma directly
-    // In a larger app, you might want to inject brand service or use events
-    const brand = await prisma.brand.findUnique({
-      where: { id: brandId },
-    });
-    return !!brand;
+  // Variant methods
+  async getVariantsByProductId(productId) {
+    const product = await this.repository.findById(productId);
+    return product?.variants || [];
   }
 
-  /**
-   * Helper method to check if category exists
-   * @private
-   * @param {string} categoryId - Category ID
-   * @returns {Promise<boolean>} True if category exists
-   */
-  async _checkCategoryExists(categoryId) {
-    // Similar to above, using Prisma directly for simplicity
-    const category = await prisma.category.findUnique({
-      where: { id: categoryId },
+  async createVariant(productId, data) {
+    const validatedData = variantSchema.parse(data);
+    
+    const product = await this.repository.findById(productId);
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    return await this.repository.createVariant({
+      ...validatedData,
+      productId,
     });
-    return !!category;
+  }
+
+  async updateVariant(id, data) {
+    const validatedData = updateVariantSchema.parse(data);
+    
+    const variant = await this.repository.findVariantById(id);
+    if (!variant) {
+      throw new Error('Variant not found');
+    }
+
+    return await this.repository.updateVariant(id, validatedData);
+  }
+
+  async deleteVariant(id) {
+    const variant = await this.repository.findVariantById(id);
+    if (!variant) {
+      throw new Error('Variant not found');
+    }
+
+    return await this.repository.deleteVariant(id);
+  }
+
+  // Private helpers
+  async _checkBrandAndCategory(brandId, categoryId) {
+    const brand = await prisma.brand.findUnique({ where: { id: brandId } });
+    if (!brand) throw new Error('Brand not found');
+
+    const category = await prisma.category.findUnique({ where: { id: categoryId } });
+    if (!category) throw new Error('Category not found');
   }
 }

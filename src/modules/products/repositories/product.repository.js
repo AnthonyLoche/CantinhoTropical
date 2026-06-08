@@ -1,39 +1,17 @@
-import { prisma } from '@/lib/prisma'; // Adjust the path according to your Prisma client location
+import { prisma } from '@/lib/prisma';
 
-/**
- * Product Repository
- * Responsible for database operations on Product model
- */
 export class ProductRepository {
-  /**
-   * Find a product by its ID
-   * @param {string} id - Product ID
-   * @returns {Promise<Object|null>} Product object or null
-   */
   async findById(id) {
     return await prisma.product.findUnique({
       where: { id },
       include: {
         brand: true,
         category: true,
+        variants: true,
       },
     });
   }
 
-  /**
-   * Find all products with optional filtering and pagination
-   * @param {Object} options - Filter and pagination options
-   * @param {string} options.search - Search term for name
-   * @param {string} options.brandId - Filter by brand ID
-   * @param {string} options.categoryId - Filter by category ID
-   * @param {boolean} options.active - Filter by active status
-   * @param {boolean} options.featured - Filter by featured status
-   * @param {number} options.skip - Number of records to skip
-   * @param {number} options.take - Number of records to take
-   * @param {string} options.orderBy - Order by field (e.g., 'name', 'price')
-   * @param {string} options.orderDirection - Order direction ('asc' or 'desc')
-   * @returns {Promise<Array>} Array of product objects
-   */
   async findAll(options = {}) {
     const {
       search,
@@ -43,35 +21,29 @@ export class ProductRepository {
       featured,
       skip = 0,
       take = 10,
-      orderBy = 'name',
-      orderDirection = 'asc'
+      orderBy = 'createdAt',
+      orderDirection = 'desc',
     } = options;
 
     const where = {};
+
     if (search) {
-      where.name = {
-        contains: search,
-        mode: 'insensitive',
-      };
+      where.OR = [
+        { name: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
     }
-    if (brandId) {
-      where.brandId = brandId;
-    }
-    if (categoryId) {
-      where.categoryId = categoryId;
-    }
-    if (active !== undefined) {
-      where.active = active;
-    }
-    if (featured !== undefined) {
-      where.featured = featured;
-    }
+    if (brandId) where.brandId = brandId;
+    if (categoryId) where.categoryId = categoryId;
+    if (active !== undefined) where.active = active;
+    if (featured !== undefined) where.featured = featured;
 
     return await prisma.product.findMany({
       where,
       include: {
         brand: true,
         category: true,
+        variants: true,
       },
       skip,
       take,
@@ -81,63 +53,111 @@ export class ProductRepository {
     });
   }
 
-  /**
-   * Create a new product
-   * @param {Object} data - Product data
-   * @param {string} data.name - Product name
-   * @param {string} data.description - Product description (optional)
-   * @param {number} data.price - Product price
-   * @param {number} data.stockQuantity - Product stock quantity
-   * @param {string} data.imageUrl - Product image URL
-   * @param {boolean} data.active - Product active status
-   * @param {boolean} data.featured - Product featured status
-   * @param {string} data.brandId - Brand ID
-   * @param {string} data.categoryId - Category ID
-   * @returns {Promise<Object>} Created product object
-   */
-  async create(data) {
+  async create(data, variants = []) {
     return await prisma.product.create({
-      data,
+      data: {
+        ...data,
+        variants: variants.length > 0 ? {
+          create: variants,
+        } : undefined,
+      },
       include: {
         brand: true,
         category: true,
+        variants: true,
       },
     });
   }
 
-  /**
-   * Update an existing product
-   * @param {string} id - Product ID
-   * @param {Object} data - Data to update
-   * @param {string} data.name - Product name
-   * @param {string} data.description - Product description (optional)
-   * @param {number} data.price - Product price
-   * @param {number} data.stockQuantity - Product stock quantity
-   * @param {string} data.imageUrl - Product image URL
-   * @param {boolean} data.active - Product active status
-   * @param {boolean} data.featured - Product featured status
-   * @param {string} data.brandId - Brand ID
-   * @param {string} data.categoryId - Category ID
-   * @returns {Promise<Object>} Updated product object
-   */
-  async update(id, data) {
+  async update(id, data, variants = null) {
+    // Primeiro, buscar as variantes existentes
+    const existingProduct = await prisma.product.findUnique({
+      where: { id },
+      include: { variants: true },
+    });
+
+    if (!existingProduct) {
+      throw new Error('Product not found');
+    }
+
+    // Preparar os dados de atualização
+    const updateData = { ...data };
+    
+    // Remover variants do updateData pois será tratado separadamente
+    delete updateData.variants;
+
+    if (variants !== null) {
+      // IDs das variantes existentes
+      const existingVariantIds = existingProduct.variants.map(v => v.id);
+      
+      // IDs das variantes que vieram na requisição (para atualizar)
+      const updateVariantIds = variants.filter(v => v.id).map(v => v.id);
+      
+      // IDs para deletar (existem no banco mas não vieram na requisição)
+      const deleteVariantIds = existingVariantIds.filter(id => !updateVariantIds.includes(id));
+      
+      // Variantes para criar (sem id)
+      const createVariants = variants.filter(v => !v.id).map(v => ({
+        label: v.label,
+        quantity: v.quantity,
+        price: v.price,
+      }));
+      
+      // Variantes para atualizar (com id)
+      const updateVariants = variants.filter(v => v.id).map(v => ({
+        where: { id: v.id },
+        data: {
+          label: v.label,
+          quantity: v.quantity,
+          price: v.price,
+        },
+      }));
+
+      updateData.variants = {
+        ...(deleteVariantIds.length > 0 && { deleteMany: { id: { in: deleteVariantIds } } }),
+        ...(createVariants.length > 0 && { create: createVariants }),
+        ...(updateVariants.length > 0 && { update: updateVariants }),
+      };
+    }
+
     return await prisma.product.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         brand: true,
         category: true,
+        variants: true,
       },
     });
   }
 
-  /**
-   * Delete a product by ID
-   * @param {string} id - Product ID
-   * @returns {Promise<Object>} Deleted product object
-   */
   async delete(id) {
     return await prisma.product.delete({
+      where: { id },
+    });
+  }
+
+  async findVariantById(id) {
+    return await prisma.productVariants.findUnique({
+      where: { id },
+    });
+  }
+
+  async createVariant(data) {
+    return await prisma.productVariants.create({
+      data,
+    });
+  }
+
+  async updateVariant(id, data) {
+    return await prisma.productVariants.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async deleteVariant(id) {
+    return await prisma.productVariants.delete({
       where: { id },
     });
   }

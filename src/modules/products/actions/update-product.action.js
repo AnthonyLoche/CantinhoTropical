@@ -18,6 +18,10 @@ import { Prisma } from '@prisma/client';
  * @param {boolean} data.featured - Product featured status
  * @param {string} data.brandId - Brand ID
  * @param {string} data.categoryId - Category ID
+ * @param {string} data.hint - Specialist tip (optional)
+ * @param {string} data.howUse - How to use instructions (optional)
+ * @param {string} data.ingredients - Ingredients list (optional)
+ * @param {Array} data.variants - Product variants (optional) - each with { id, label, quantity, price }
  * @returns {Promise<Object>} Result object with success/error
  */
 export async function updateProductAction(data) {
@@ -58,6 +62,20 @@ export async function updateProductAction(data) {
       };
     }
 
+    // Processar variantes
+    let variants = null;
+    if (data.variants && Array.isArray(data.variants)) {
+      variants = data.variants
+        .filter(v => v.label && v.label.trim() !== '')
+        .map(v => ({
+          id: v.id,
+          label: v.label.trim(),
+          quantity: parseInt(v.quantity) || 0,
+          price: parseFloat(v.price) || 0,
+        }));
+      console.log(`📦 Processing ${variants.length} variants`);
+    }
+
     // Preparar os dados para o serviço
     const productData = {
       name: data.name.trim(),
@@ -69,9 +87,18 @@ export async function updateProductAction(data) {
       featured: data.featured === true || data.featured === 'true',
       brandId: data.brandId,
       categoryId: data.categoryId,
+      // Novos campos
+      hint: data.hint || '',
+      howUse: data.howUse || '',
+      ingredients: data.ingredients || '',
+      // Variantes
+      variants: variants,
     };
 
-    console.log('📤 Sending to ProductService:', productData);
+    console.log('📤 Sending to ProductService:', {
+      ...productData,
+      variants: productData.variants?.length || 0,
+    });
 
     const productService = new ProductService();
     const product = await productService.updateProduct(id, productData);
@@ -104,7 +131,7 @@ export async function updateProductAction(data) {
     
     return {
       success: false,
-      error: error.message || 'Failed to update product',
+      error: error.message || 'Erro ao atualizar produto',
     };
   }
 }

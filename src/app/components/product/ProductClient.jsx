@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -15,25 +15,75 @@ import {
   CheckCircle2,
   Lightbulb,
   ArrowRight,
+  Layers,
+  BookOpen,
+  ListChecks,
 } from "lucide-react";
 import styles from "@/assets/css/product/Product.module.css";
+import { getProductsAction } from "@/modules/products/actions/get-products.action";
 
 export default function ProductClient({ product }) {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
+  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [loadingRelated, setLoadingRelated] = useState(true);
+
+  // Verifica se o produto tem variantes
+  const hasVariants = product.variants && product.variants.length > 0;
+  
+  // Preço a ser exibido (da variante selecionada ou do produto)
+  const displayPrice = selectedVariant ? selectedVariant.price : product.price;
+  
+  // Estoque a ser exibido (da variante selecionada ou do produto)
+  const displayStock = selectedVariant ? selectedVariant.quantity : product.stockQuantity;
+
+  // Buscar produtos relacionados da mesma categoria
+  useEffect(() => {
+    const fetchRelatedProducts = async () => {
+      if (!product.categoryId) return;
+      
+      setLoadingRelated(true);
+      try {
+        const result = await getProductsAction({ 
+          categoryId: product.categoryId,
+          activeOnly: true
+        });
+        
+        if (result.success) {
+          // Filtrar o produto atual e limitar a 4 produtos
+          const filtered = result.data
+            .filter(p => p.id !== product.id)
+            .slice(0, 4);
+          setRelatedProducts(filtered);
+        }
+      } catch (error) {
+        console.error("Error fetching related products:", error);
+      } finally {
+        setLoadingRelated(false);
+      }
+    };
+
+    fetchRelatedProducts();
+  }, [product.categoryId, product.id]);
 
   const updateQuantity = (delta) => {
     setQuantity(prev => {
       let newQty = prev + delta;
       if (newQty < 1) newQty = 1;
-      if (newQty > (product.stockQuantity || 99)) newQty = product.stockQuantity;
+      if (newQty > (displayStock || 99)) newQty = displayStock;
       return newQty;
     });
   };
 
+  const handleVariantChange = (variant) => {
+    setSelectedVariant(variant);
+    setQuantity(1);
+  };
+
   const tabs = [
-    { id: "description", label: "Descrição Detalhada" },
+    { id: "description", label: "Descrição" },
     { id: "ingredients", label: "Ingredientes" },
     { id: "usage", label: "Modo de Uso" },
   ];
@@ -54,13 +104,6 @@ export default function ProductClient({ product }) {
     { icon: ShieldCheck, text: "Vet Approved" },
   ];
 
-  // Benefícios (mock - pode vir da API)
-  const benefits = [
-    "Promove o brilho natural e a resistência das penas.",
-    "Fácil digestão com enzimas naturais de frutos tropicais.",
-    "Suporte imunológico através de antioxidantes naturais.",
-  ];
-
   return (
     <main className={styles.main}>
       <div className={styles.container}>
@@ -68,7 +111,7 @@ export default function ProductClient({ product }) {
         <nav className={styles.breadcrumb}>
           <Link href="/" className={styles.breadcrumbLink}>Home</Link>
           <ChevronRight size={12} className={styles.breadcrumbIcon} />
-          <Link href="/catalog" className={styles.breadcrumbLink}>Shop</Link>
+          <Link href="/catalog" className={styles.breadcrumbLink}>Catálogo</Link>
           <ChevronRight size={12} className={styles.breadcrumbIcon} />
           <span className={styles.breadcrumbCurrent}>
             {product.category?.name || "Produto"}
@@ -126,30 +169,39 @@ export default function ProductClient({ product }) {
               {product.brand?.name || "Cantinho Tropical"}
             </div>
             <h1 className={styles.title}>{product.name}</h1>
+            
             <div className={styles.priceRow}>
-              <span className={styles.price}>{formatPrice(product.price)}</span>
+              <span className={styles.price}>{formatPrice(displayPrice)}</span>
               <div className={styles.divider}></div>
               <div className={styles.stock}>
                 <Package size={18} className={styles.stockIcon} />
-                <span>{product.stockQuantity || 0} unidades em stock</span>
+                <span>{displayStock || 0} unidades em stock</span>
               </div>
             </div>
+            
             <p className={styles.description}>{product.description}</p>
 
-            {/* Product Features */}
-            <div className={styles.featuresGrid}>
-              {features.map((feature, idx) => {
-                const Icon = feature.icon;
-                return (
-                  <div key={idx} className={styles.featureCard}>
-                    <Icon size={24} className={styles.featureIcon} />
-                    <span className={styles.featureText}>{feature.text}</span>
-                  </div>
-                );
-              })}
-            </div>
-
-
+            {/* Variants Selector */}
+            {hasVariants && (
+              <div className={styles.variantsSection}>
+                <label className={styles.variantsLabel}>
+                  <Layers size={16} className={styles.inlineIcon} />
+                  Opções disponíveis:
+                </label>
+                <div className={styles.variantsGrid}>
+                  {product.variants.map((variant) => (
+                    <button
+                      key={variant.id}
+                      className={`${styles.variantOption} ${selectedVariant?.id === variant.id ? styles.variantActive : ''}`}
+                      onClick={() => handleVariantChange(variant)}
+                    >
+                      <span className={styles.variantLabel}>{variant.label}</span>
+                      <span className={styles.variantPrice}>{formatPrice(variant.price)}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -168,34 +220,126 @@ export default function ProductClient({ product }) {
           </div>
           <div className={styles.tabsContent}>
             <div className={styles.tabPanel}>
-              <p className={styles.tabText}>
-                {product.description || "Descrição detalhada do produto em breve."}
-              </p>
-              <ul className={styles.benefitsList}>
-                {benefits.map((benefit, idx) => (
-                  <li key={idx} className={styles.benefitItem}>
-                    <CheckCircle2 size={20} className={styles.benefitIcon} />
-                    <span>{benefit}</span>
-                  </li>
-                ))}
-              </ul>
+              {/* Descrição */}
+              {activeTab === "description" && (
+                <>
+                  <p className={styles.tabText}>
+                    {product.description || "Descrição detalhada do produto em breve."}
+                  </p>
+                  
+                  {/* Benefícios */}
+                  <ul className={styles.benefitsList}>
+                    <li className={styles.benefitItem}>
+                      <CheckCircle2 size={20} className={styles.benefitIcon} />
+                      <span>Promove o brilho natural e a resistência das penas.</span>
+                    </li>
+                    <li className={styles.benefitItem}>
+                      <CheckCircle2 size={20} className={styles.benefitIcon} />
+                      <span>Fácil digestão com enzimas naturais de frutos tropicais.</span>
+                    </li>
+                    <li className={styles.benefitItem}>
+                      <CheckCircle2 size={20} className={styles.benefitIcon} />
+                      <span>Suporte imunológico através de antioxidantes naturais.</span>
+                    </li>
+                  </ul>
+                </>
+              )}
+
+              {/* Ingredientes */}
+              {activeTab === "ingredients" && (
+                <div className={styles.ingredientsSection}>
+                  <h3 className={styles.sectionSubtitle}>
+                    <ListChecks size={20} className={styles.sectionIcon} />
+                    Ingredientes
+                  </h3>
+                  <p className={styles.tabText}>
+                    {product.ingredients || "Informação de ingredientes em breve."}
+                  </p>
+                </div>
+              )}
+
+              {/* Modo de Uso */}
+              {activeTab === "usage" && (
+                <div className={styles.usageSection}>
+                  <h3 className={styles.sectionSubtitle}>
+                    <BookOpen size={20} className={styles.sectionIcon} />
+                    Modo de Uso
+                  </h3>
+                  <p className={styles.tabText}>
+                    {product.howUse || "Instruções de uso em breve."}
+                  </p>
+                </div>
+              )}
             </div>
+
+            {/* Dica do Especialista - Sidebar */}
             <div className={styles.tipCard}>
               <h3 className={styles.tipTitle}>
                 <Lightbulb size={24} className={styles.tipIcon} />
                 Dica do Especialista
               </h3>
               <p className={styles.tipText}>
-                Para aves mais exigentes, misture gradualmente esta ração com a anterior durante 7 dias. Lembre-se de fornecer sempre água fresca e filtrada.
+                {product.hint || "Para melhores resultados, siga as instruções de uso e mantenha o produto em local seco e arejado."}
               </p>
             </div>
           </div>
         </section>
 
-        {/* Related Products - Opcional */}
-        {/* <section className={styles.relatedSection}>
-          ...
-        </section> */}
+        {/* Related Products Section */}
+        <section className={styles.relatedSection}>
+          <div className={styles.relatedHeader}>
+            <div>
+              <h2 className={styles.relatedTitle}>Produtos Relacionados</h2>
+              <p className={styles.relatedSubtitle}>
+                Descubra mais produtos da categoria {product.category?.name || "deste produto"}
+              </p>
+            </div>
+            <Link href={`/catalog?category=${product.categoryId}`} className={styles.viewAllLink}>
+              Ver Todos
+              <ArrowRight size={16} className={styles.viewAllIcon} />
+            </Link>
+          </div>
+
+          {loadingRelated ? (
+            <div className={styles.relatedGrid}>
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className={styles.skeletonCard}>
+                  <div className={styles.skeletonImage} />
+                  <div className={styles.skeletonInfo} />
+                </div>
+              ))}
+            </div>
+          ) : relatedProducts.length === 0 ? (
+            <div className={styles.noRelated}>
+              <p>Nenhum produto relacionado encontrado.</p>
+            </div>
+          ) : (
+            <div className={styles.relatedGrid}>
+              {relatedProducts.map((item) => (
+                <Link key={item.id} href={`/product/${item.id}`} className={styles.productCard}>
+                  <div className={styles.cardImageWrapper}>
+                    {item.imageUrl ? (
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.name}
+                        fill
+                        className={styles.cardImage}
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                      />
+                    ) : (
+                      <div className={styles.cardImagePlaceholder}>📷</div>
+                    )}
+                  </div>
+                  <div className={styles.cardCategory}>
+                    {item.category?.name || "Produto"}
+                  </div>
+                  <h4 className={styles.cardName}>{item.name}</h4>
+                  <p className={styles.cardPrice}>{formatPrice(item.price)}</p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </main>
   );

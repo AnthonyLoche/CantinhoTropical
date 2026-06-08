@@ -728,3 +728,192 @@
 .productCard:nth-child(2) { animation-delay: 0.1s; }
 .productCard:nth-child(3) { animation-delay: 0.2s; }
 .productCard:nth-child(4) { animation-delay: 0.3s; }
+
+/* Variants Section */
+.variantsSection {
+  margin: 24px 0;
+  padding: 16px;
+  background: var(--surface-container-low);
+  border-radius: 16px;
+  border: 1px solid var(--outline-variant);
+}
+
+.variantsLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  margin-bottom: 12px;
+}
+
+.variantsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.variantOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  background: var(--surface);
+  border: 1px solid var(--outline-variant);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 80px;
+}
+
+.variantOption:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.variantActive {
+  border-color: var(--primary);
+  background: rgba(1, 38, 31, 0.05);
+  box-shadow: 0 2px 8px rgba(1, 38, 31, 0.1);
+}
+
+.variantLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface);
+}
+
+.variantPrice {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--primary);
+}
+
+/* Ingredients & Usage Sections */
+.ingredientsSection,
+.usageSection {
+  margin-bottom: 24px;
+}
+
+.sectionSubtitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+
+.sectionIcon {
+  color: var(--secondary);
+}
+
+.inlineIcon {
+  display: inline;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .variantsGrid {
+    flex-direction: column;
+  }
+  
+  .variantOption {
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  .sectionSubtitle {
+    font-size: 16px;
+  }
+}
+
+/* Skeleton Loading for Related Products */
+.skeletonCard {
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--outline-variant);
+}
+
+.skeletonImage {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonInfo {
+  padding: 16px;
+}
+
+.skeletonInfo::before {
+  content: '';
+  display: block;
+  width: 60%;
+  height: 12px;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+.skeletonInfo::after {
+  content: '';
+  display: block;
+  width: 40%;
+  height: 20px;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* No Related Products */
+.noRelated {
+  text-align: center;
+  padding: 48px;
+  background: var(--surface);
+  border-radius: 16px;
+  border: 1px solid var(--outline-variant);
+  color: var(--on-surface-variant);
+}
+
+/* Card Image Placeholder */
+.cardImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #f0eded 0%, #e4e2e1 100%);
+  font-size: 3rem;
+}
+
+/* Responsive adjustments for related products */
+@media (max-width: 768px) {
+  .relatedTitle {
+    font-size: 24px;
+  }
+  
+  .relatedSubtitle {
+    font-size: 14px;
+  }
+  
+  .noRelated {
+    padding: 32px;
+  }
+}
