@@ -2,6 +2,7 @@
   position: relative;
   padding: 24px 64px;
   background-color: var(--surface-container-low, #f5f3f2);
+  width: 100%;
 }
 
 /* Arrows */
@@ -10,6 +11,8 @@
   justify-content: flex-end;
   gap: 8px;
   margin-bottom: 24px;
+  width: 85%;
+  margin: 0 auto;
 }
 
 .arrow {
@@ -40,6 +43,8 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding-bottom: 8px;
+  width: 85%;
+  margin: 0 auto;
 }
 
 .track::-webkit-scrollbar {

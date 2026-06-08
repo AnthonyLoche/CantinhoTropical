@@ -35,7 +35,7 @@
 .container {
   position: relative;
   z-index: 10;
-  width: 100%;
+  width: 85%;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;

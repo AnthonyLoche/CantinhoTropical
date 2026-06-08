@@ -4,7 +4,7 @@
 }
 
 .container {
-  width: 100%;
+  width: 85%;
   margin: 20px auto;
   display: grid;
   grid-template-columns: 7fr 5fr;
