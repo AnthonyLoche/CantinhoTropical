@@ -227,22 +227,7 @@ export default function ProductClient({ product }) {
                     {product.description || "Descrição detalhada do produto em breve."}
                   </p>
                   
-                  {/* Benefícios */}
-                  <ul className={styles.benefitsList}>
-                    <li className={styles.benefitItem}>
-                      <CheckCircle2 size={20} className={styles.benefitIcon} />
-                      <span>Promove o brilho natural e a resistência das penas.</span>
-                    </li>
-                    <li className={styles.benefitItem}>
-                      <CheckCircle2 size={20} className={styles.benefitIcon} />
-                      <span>Fácil digestão com enzimas naturais de frutos tropicais.</span>
-                    </li>
-                    <li className={styles.benefitItem}>
-                      <CheckCircle2 size={20} className={styles.benefitIcon} />
-                      <span>Suporte imunológico através de antioxidantes naturais.</span>
-                    </li>
-                  </ul>
-                </>
+                 </>
               )}
 
               {/* Ingredientes */}

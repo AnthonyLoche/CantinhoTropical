@@ -1,15 +1,17 @@
+// app/components/MainCatalog.jsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { Filter, ChevronLeft, ChevronRight, X } from "lucide-react";
 import Image from "next/image";
 import styles from "../../../assets/css/catalog/MainCatalog.module.css";
 
 export default function MainCatalog({ 
   initialProducts = [], 
   initialCategories = [], 
-  initialBrands = [] 
+  initialBrands = [],
+  selectedCategoryId = null
 }) {
   const [products] = useState(initialProducts);
   const [categories] = useState(initialCategories);
@@ -19,13 +21,30 @@ export default function MainCatalog({
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8; // Alterado para 8 produtos por página
+  const itemsPerPage = 8;
+
+  // Sincronizar categoria selecionada do slider com os filtros
+  useEffect(() => {
+    if (selectedCategoryId) {
+      // Se já estiver selecionada, não faz nada
+      if (!selectedCategories.includes(selectedCategoryId)) {
+        setSelectedCategories([selectedCategoryId]);
+        setCurrentPage(1);
+      }
+    } else {
+      // Se não tem categoria selecionada, limpa o filtro de categoria
+      if (selectedCategories.length > 0) {
+        setSelectedCategories([]);
+        setCurrentPage(1);
+      }
+    }
+  }, [selectedCategoryId]);
 
   // Filtrar produtos
   const filteredProducts = useMemo(() => {
     let filtered = [...products];
 
-    // Filtrar por categoria
+    // Filtrar por categoria (prioriza a categoria do slider)
     if (selectedCategories.length > 0) {
       filtered = filtered.filter((p) => 
         selectedCategories.includes(p.categoryId)
@@ -101,7 +120,11 @@ export default function MainCatalog({
     }).format(price || 0);
   };
 
-  // Se não há produtos (estado vazio)
+  // Mostrar badge de filtro ativo por categoria
+  const activeCategory = selectedCategories.length === 1 
+    ? categories.find(c => c.id === selectedCategories[0])
+    : null;
+
   if (products.length === 0) {
     return (
       <main className={styles.main}>
@@ -128,7 +151,6 @@ export default function MainCatalog({
   return (
     <main className={styles.main}>
       <div className={styles.container}>
-        {/* Sidebar Filter */}
         <aside className={styles.sidebar}>
           <div className={styles.sticky}>
             <div className={styles.filterHeader}>
@@ -136,6 +158,19 @@ export default function MainCatalog({
               <h2 className={styles.filterTitle}>Filtros</h2>
             </div>
             <p className={styles.filterSubtitle}>Refine sua busca</p>
+
+            {/* Active Category Badge */}
+            {activeCategory && (
+              <div className={styles.activeFilterBadge}>
+                <span>Categoria: {activeCategory.name}</span>
+                <button 
+                  onClick={() => handleClearFilters()}
+                  className={styles.clearBadge}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            )}
 
             {/* Categories */}
             {categories.length > 0 && (
@@ -202,7 +237,6 @@ export default function MainCatalog({
           </div>
         </aside>
 
-        {/* Product Grid */}
         <section className={styles.productSection}>
           <div className={styles.toolbar}>
             <p className={styles.resultCount}>
@@ -272,7 +306,6 @@ export default function MainCatalog({
                 ))}
               </div>
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className={styles.pagination}>
                   <button

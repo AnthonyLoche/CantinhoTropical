@@ -1,9 +1,10 @@
 import { Suspense } from "react";
-import { HeaderMain, HeroCatalog, CategoriesCatalog, MainCatalog, FooterMain, Reveal } from "../../components";
+import { HeaderMain, HeroCatalog, FooterMain, Reveal } from "../../components";
 import { getCategoriesAction } from "@/modules/categories/actions/get-categories.action";
 import { getProductsAction } from "@/modules/products/actions/get-products.action";
 import { getBrandsAction } from "@/modules/brands/actions/get-brands.action";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
+import CatalogWrapper from "@/app/components/catalog/CatalogWrapper";
 
 async function CatalogContent() {
   const [categoriesResult, productsResult, brandsResult] = await Promise.all([
@@ -17,23 +18,11 @@ async function CatalogContent() {
   const brands = brandsResult.success ? brandsResult.data : [];
 
   return (
-    <>
-      <HeaderMain />
-      <Reveal>
-        <HeroCatalog />
-      </Reveal>
-      <Reveal>
-        <CategoriesCatalog initialCategories={categories} />
-      </Reveal>
-      <Reveal>
-        <MainCatalog 
-          initialProducts={products}
-          initialCategories={categories}
-          initialBrands={brands}
-        />
-      </Reveal>
-      <FooterMain />
-    </>
+    <CatalogWrapper
+      initialCategories={categories}
+      initialProducts={products}
+      initialBrands={brands}
+    />
   );
 }
 

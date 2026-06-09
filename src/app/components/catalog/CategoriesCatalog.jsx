@@ -1,3 +1,4 @@
+// app/components/CategorySlider.jsx
 "use client";
 
 import { useRef, useState, useEffect } from "react";
@@ -5,24 +6,36 @@ import styles from "../../../assets/css/catalog/CategoriesCatalog.module.css";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 
-export default function CategorySlider({ initialCategories = [] }) {
+export default function CategorySlider({ 
+  initialCategories = [], 
+  onCategorySelect,
+  selectedCategoryId: externalSelectedId 
+}) {
   const trackRef = useRef(null);
   const [categories, setCategories] = useState(initialCategories);
-  const [activeId, setActiveId] = useState(null);
+  const [internalSelectedId, setInternalSelectedId] = useState(null);
   const [loading, setLoading] = useState(initialCategories.length === 0);
+
+  // Use external state if provided, otherwise use internal
+  const activeId = externalSelectedId !== undefined ? externalSelectedId : internalSelectedId;
 
   const ITEM_WIDTH = 140;
 
-  // Só busca se não recebeu categorias iniciais
   useEffect(() => {
-    if (initialCategories.length > 0) {
-      // Se já tem categorias, define o primeiro como ativo
-      if (initialCategories.length > 0 && !activeId) {
-        setActiveId(initialCategories[0]?.id);
-      }
-      setLoading(false);
+    setCategories(initialCategories);
+  }, [initialCategories, externalSelectedId, onCategorySelect]);
+
+  const handleCategoryClick = (categoryId) => {
+    // Update state
+    if (externalSelectedId === undefined) {
+      setInternalSelectedId(categoryId);
     }
-  }, [initialCategories, activeId]);
+    
+    // Notify parent
+    if (onCategorySelect) {
+      onCategorySelect(categoryId);
+    }
+  };
 
   const scroll = (dir) => {
     if (!trackRef.current) return;
@@ -56,7 +69,6 @@ export default function CategorySlider({ initialCategories = [] }) {
     );
   }
 
-  // Empty state
   if (!loading && categories.length === 0) {
     return (
       <section className={styles.section}>
@@ -93,7 +105,7 @@ export default function CategorySlider({ initialCategories = [] }) {
             <button
               key={cat.id}
               className={`${styles.item} ${isActive ? styles.itemActive : ""}`}
-              onClick={() => setActiveId(cat.id)}
+              onClick={() => handleCategoryClick(cat.id)}
             >
               <div
                 className={`${styles.circle} ${isActive ? styles.circleActive : ""}`}
