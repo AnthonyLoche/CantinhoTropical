@@ -336,12 +336,6 @@ export default function AdminBrandsPage() {
               disabled
             />
           </div>
-          <button className={styles.filterButton} disabled>
-            <Filter size={15} /> Filtros
-          </button>
-          <button className={styles.filterButton} disabled>
-            <ArrowUpDown size={15} /> Ordenar
-          </button>
         </div>
         <div className={styles.loadingContainer}>
           {[...Array(5)].map((_, i) => (

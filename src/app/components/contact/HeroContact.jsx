@@ -42,10 +42,8 @@ export default function HeroContact() {
       const currentTime = currentHour + currentMinute / 60;
 
       if (dayName === "Domingo") {
-        // Domingo: 10:00 - 13:00
         return currentTime >= 10 && currentTime <= 13;
       } else {
-        // Dias úteis e sábado: manhã 10-13, tarde 15-20
         const isMorningOpen = currentTime >= 10 && currentTime <= 13;
         const isAfternoonOpen = currentTime >= 15 && currentTime <= 20;
         return isMorningOpen || isAfternoonOpen;
@@ -66,10 +64,15 @@ export default function HeroContact() {
     };
 
     updateHours();
-    // Atualiza a cada minuto para verificar status
     const interval = setInterval(updateHours, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleWhatsApp = () => {
+    const phoneNumber = "351915290212";
+    const message = `Olá! Gostaria de mais informações sobre os produtos e serviços do Cantinho Tropical.`;
+    window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, "_blank");
+  };
 
   return (
     <section className={styles.hero}>
@@ -138,13 +141,9 @@ export default function HeroContact() {
 
           {/* Botões CTA */}
           <div className={styles.buttons}>
-            <button className={styles.btnPrimary}>
+            <button onClick={handleWhatsApp} className={styles.btnPrimary}>
               Enviar Mensagem
               <span className={styles.btnArrow}>→</span>
-            </button>
-            <button className={styles.btnWhatsapp}>
-              <span className={styles.whatsappIcon}>💬</span>
-              WhatsApp
             </button>
           </div>
         </div>

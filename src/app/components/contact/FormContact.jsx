@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { MapPin, Mail, Phone, Clock } from "lucide-react";
+import { MapPin, Mail, Phone, Clock, Send } from "lucide-react";
 import styles from "../../../assets/css/contact/FormContact.module.css";
 
 export default function FormContact() {
@@ -11,6 +11,8 @@ export default function FormContact() {
     email: "",
     message: "",
   });
+  const [isSending, setIsSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,8 +21,43 @@ export default function FormContact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    // Aqui você pode adicionar a lógica de envio do formulário
+    
+    // Validar campos obrigatórios
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.message) {
+      alert("Por favor, preencha todos os campos.");
+      return;
+    }
+
+    setIsSending(true);
+
+    // Montar a mensagem formatada para o WhatsApp
+    const phoneNumber = "351915290212";
+    const message = `*Nova mensagem do site - Cantinho Tropical*%0A%0A
+*📝 Dados do Cliente:*%0A
+*Nome:* ${formData.firstName} ${formData.lastName}%0A
+*Email:* ${formData.email}%0A%0A
+*💬 Mensagem:*%0A
+${formData.message}%0A%0A
+---
+*Enviado via formulário de contacto do site*`;
+
+    // Abrir WhatsApp com a mensagem
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+    
+    // Simular envio e resetar formulário
+    setTimeout(() => {
+      setSent(true);
+      setFormData({
+        firstName: "",
+        lastName: "",
+        email: "",
+        message: "",
+      });
+      setIsSending(false);
+      
+      // Esconder mensagem de sucesso após 3 segundos
+      setTimeout(() => setSent(false), 3000);
+    }, 500);
   };
 
   return (
@@ -29,10 +66,17 @@ export default function FormContact() {
         {/* Form Section */}
         <div className={styles.formWrapper}>
           <h2 className={styles.formTitle}>Envie uma Mensagem</h2>
+          
+          {sent && (
+            <div className={styles.successMessage}>
+              Mensagem enviada com sucesso! Você será redirecionado ao WhatsApp.
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label className={styles.label}>Primeiro Nome</label>
+                <label className={styles.label}>Primeiro Nome *</label>
                 <input
                   type="text"
                   name="firstName"
@@ -40,10 +84,11 @@ export default function FormContact() {
                   value={formData.firstName}
                   onChange={handleChange}
                   className={styles.input}
+                  required
                 />
               </div>
               <div className={styles.formGroup}>
-                <label className={styles.label}>Apelido</label>
+                <label className={styles.label}>Apelido *</label>
                 <input
                   type="text"
                   name="lastName"
@@ -51,11 +96,12 @@ export default function FormContact() {
                   value={formData.lastName}
                   onChange={handleChange}
                   className={styles.input}
+                  required
                 />
               </div>
             </div>
             <div className={styles.formGroupFull}>
-              <label className={styles.label}>Email</label>
+              <label className={styles.label}>Email *</label>
               <input
                 type="email"
                 name="email"
@@ -63,10 +109,11 @@ export default function FormContact() {
                 value={formData.email}
                 onChange={handleChange}
                 className={styles.input}
+                required
               />
             </div>
             <div className={styles.formGroupFull}>
-              <label className={styles.label}>Mensagem</label>
+              <label className={styles.label}>Mensagem *</label>
               <textarea
                 name="message"
                 placeholder="Como podemos ajudar?"
@@ -74,11 +121,17 @@ export default function FormContact() {
                 value={formData.message}
                 onChange={handleChange}
                 className={styles.textarea}
+                required
               />
             </div>
             <div className={styles.formGroupFull}>
-              <button type="submit" className={styles.submitBtn}>
-                Enviar Mensagem
+              <button 
+                type="submit" 
+                className={styles.submitBtn}
+                disabled={isSending}
+              >
+                <Send size={18} />
+                {isSending ? "Enviando..." : "Enviar Mensagem"}
               </button>
             </div>
           </form>
@@ -94,16 +147,7 @@ export default function FormContact() {
               </div>
               <div>
                 <h4 className={styles.infoItemTitle}>Morada</h4>
-                <p className={styles.infoText}>Rua dos Laranjeiras, 2640-577 Mafra</p>
-              </div>
-            </div>
-            <div className={styles.infoItem}>
-              <div className={styles.iconWrapper}>
-                <Mail size={20} className={styles.icon} />
-              </div>
-              <div>
-                <h4 className={styles.infoItemTitle}>Email</h4>
-                <p className={styles.infoText}>geral@cantinhotropical.pt</p>
+                <p className={styles.infoText}>Rua das Laranjeiras, 2640-577 Mafra</p>
               </div>
             </div>
             <div className={styles.infoItem}>

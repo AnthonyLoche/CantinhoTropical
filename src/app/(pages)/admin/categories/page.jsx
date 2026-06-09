@@ -402,12 +402,6 @@ export default function AdminCategoriesPage() {
             className={styles.searchInput}
           />
         </div>
-        <button className={styles.filterButton}>
-          <Filter size={15} /> Filtros
-        </button>
-        <button className={styles.filterButton}>
-          <ArrowUpDown size={15} /> Ordenar
-        </button>
       </div>
 
       {/* Empty State */}

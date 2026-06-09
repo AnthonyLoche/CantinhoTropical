@@ -595,9 +595,6 @@ export default function AdminProductsPage() {
             <span className={styles.activeFilterBadge}>{activeFiltersCount()}</span>
           )}
         </button>
-        <button className={styles.filterButton}>
-          <ArrowUpDown size={15} /> Ordenar
-        </button>
       </div>
 
       {/* Empty State */}
