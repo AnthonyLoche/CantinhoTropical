@@ -76,8 +76,8 @@ export default function AdminLayout({ children }) {
     { title: "Produtos", icon: Package, route: "/admin/products" },
     { title: "Categorias", icon: FolderTree, route: "/admin/categories" },
     { title: "Marcas", icon: Tag, route: "/admin/brands" },
+    { title: "Conteúdo", icon: FolderTree, route: "/admin/texts" },
     { title: "Usuários", icon: Users, route: "/admin/users" },
-    { title: "Configurações", icon: Settings, route: "/admin/settings" },
   ];
 
 
@@ -95,8 +95,8 @@ export default function AdminLayout({ children }) {
     { title: "Produtos", icon: Package, route: "/admin/products" },
     { title: "Categorias", icon: FolderTree, route: "/admin/categories" },
     { title: "Marcas", icon: Tag, route: "/admin/brands" },
+    { title: "Conteúdo", icon: FolderTree, route: "/admin/texts" },
     { title: "Usuários", icon: Users, route: "/admin/users" },
-    { title: "Configurações", icon: Settings, route: "/admin/settings" },
   ];
 
   const isActive = (route) => {

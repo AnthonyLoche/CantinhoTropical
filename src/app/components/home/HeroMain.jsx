@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingBag, MessageCircle, ShieldCheck, Users, Star, ChevronRight, Leaf } from "lucide-react";
 import styles from "../../../assets/css/home/HeroMain.module.css";
+import { getTextContentAction } from "@/modules/text-content/actions/get-text-content.action";
 import logo from "@/assets/images/logo.png";
 import heroBg from "@/assets/images/hero-bg.png";
 import aves from "@/assets/images/hero/aves.jpg";
@@ -24,16 +25,37 @@ const SLIDES = [
   { id: 6, image: gato, label: "Gatos" },
 ];
 
-const AVATARS = [
-  "/images/avatars/avatar1.jpg",
-  "/images/avatars/avatar2.jpg",
-  "/images/avatars/avatar3.jpg",
-];
-
 export default function HeroMain() {
   const router = useRouter();
   const [current, setCurrent] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const [content, setContent] = useState({
+    heroBadge: "Há mais de 20 anos cuidando dos seus animais",
+    heroTitle: "Tudo para o seu pet, aquário e animais exóticos.",
+    heroDescription: "Alimentação, acessórios, medicamentos, aquariofilia, aves, roedores, répteis e muito mais para o bem-estar do seu melhor amigo.",
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchContent();
+  }, []);
+
+  const fetchContent = async () => {
+    try {
+      const result = await getTextContentAction();
+      if (result.success && result.data) {
+        setContent({
+          heroBadge: result.data.heroBadge || content.heroBadge,
+          heroTitle: result.data.heroTitle || content.heroTitle,
+          heroDescription: result.data.heroDescription || content.heroDescription,
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching content:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const goTo = useCallback((index) => {
     if (animating) return;
@@ -62,6 +84,34 @@ export default function HeroMain() {
     router.push("/catalog");
   };
 
+  if (loading) {
+    return (
+      <section className={styles.section}>
+        <div className={styles.background}>
+          <Image
+            src={heroBg}
+            alt="Background"
+            fill
+            className={styles.backgroundImage}
+            priority
+            quality={100}
+          />
+        </div>
+        <div className={styles.container}>
+          <div className={styles.left}>
+            <div className={styles.skeletonBadge}></div>
+            <div className={styles.skeletonTitle}></div>
+            <div className={styles.skeletonText}></div>
+            <div className={styles.skeletonButtons}></div>
+          </div>
+          <div className={styles.right}>
+            <div className={styles.skeletonCarousel}></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className={styles.section}>
       {/* Background Image */}
@@ -82,13 +132,12 @@ export default function HeroMain() {
           {/* Badge */}
           <div className={styles.badge}>
             <Leaf size={14} />
-            Há mais de 20 anos cuidando dos seus animais
+            {content.heroBadge}
           </div>
 
           {/* Título */}
           <h1 className={styles.title}>
-            Tudo para o seu pet,{" "}
-            <span className={styles.titleLine2}>aquário e</span>{" "}
+            {content.heroTitle.split("animais exóticos")[0]}
             <span className={styles.titleHighlight}>
               animais exóticos.
               <span className={styles.leaf} aria-hidden>🌿</span>
@@ -97,8 +146,7 @@ export default function HeroMain() {
 
           {/* Subtítulo */}
           <p className={styles.subtitle}>
-            Alimentação, acessórios, medicamentos, aquariofilia, aves, roedores, répteis
-            e muito mais para o bem-estar do seu melhor amigo.
+            {content.heroDescription}
           </p>
 
           {/* Botões */}

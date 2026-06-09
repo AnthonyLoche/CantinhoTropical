@@ -79,3 +79,34 @@ model ProductVariants {
   productId    String
   product      Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
+model TextContent {
+  id        String   @id @default(cuid())
+  
+  // Hero Section
+  heroBadge        String?  @db.Text
+  heroTitle        String?  @db.Text
+  heroDescription  String?  @db.Text
+  
+  // Categories Section
+  categoriesTitle       String?  @db.Text
+  categoriesDescription String?  @db.Text
+  
+  // About Section
+  aboutTitle       String?  @db.Text
+  aboutDescription String?  @db.Text
+  
+  // Pet Hotel Section
+  petHotelChip     String?  @db.Text
+  petHotelTitle    String?  @db.Text
+  petHotelDescription String? @db.Text
+  
+  // Contact Section
+  contactTitle     String?  @db.Text
+  contactDescription String? @db.Text
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("home_contents")
+}

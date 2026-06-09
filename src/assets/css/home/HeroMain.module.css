@@ -373,3 +373,71 @@
     right: 12px;
   }
 }
+
+/* Skeleton Loading */
+.skeletonBadge {
+  width: 280px;
+  height: 36px;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 9999px;
+}
+
+.skeletonTitle {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 12px;
+}
+
+.skeletonText {
+  width: 100%;
+  height: 80px;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeletonButtons {
+  display: flex;
+  gap: 12px;
+}
+
+.skeletonButtons::before {
+  content: '';
+  width: 180px;
+  height: 52px;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 9999px;
+}
+
+.skeletonButtons::after {
+  content: '';
+  width: 180px;
+  height: 52px;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 9999px;
+}
+
+.skeletonCarousel {
+  width: 100%;
+  max-width: 560px;
+  aspect-ratio: 4 / 5;
+  background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 24px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
