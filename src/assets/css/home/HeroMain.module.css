@@ -1,14 +1,14 @@
 .section {
   position: relative;
   min-height: 100vh;
-  width: 100%;          /* fundo ocupa 100% */
+  width: 100%;
   overflow: hidden;
   padding: 100px 0 60px;
 }
 
 .container {
-  width: 85%;           /* conteúdo limitado a 85% */
-  max-width: 1400px;    /* opcional: teto para telas muito grandes */
+  width: 85%;
+  max-width: 1400px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -40,11 +40,12 @@
 /* ── LEFT ── */
 .left {
   position: relative;
-  z-index: 2;
+  z-index: 10; /* Aumentado para garantir que fique acima */
   display: flex;
   flex-direction: column;
   gap: 28px;
   max-width: 580px;
+  pointer-events: auto; /* Garante que receba cliques */
 }
 
 /* Badge */
@@ -106,6 +107,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  position: relative;
+  z-index: 20; /* Aumentado */
 }
 
 .btnPrimary {
@@ -123,6 +126,8 @@
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(1, 38, 31, 0.25);
   transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  z-index: 20;
 }
 
 .btnPrimary:hover {
@@ -145,6 +150,8 @@
   border: 2px solid #c1c8c4;
   cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s;
+  position: relative;
+  z-index: 20;
 }
 
 .btnSecondary:hover {
@@ -157,6 +164,8 @@
   display: flex;
   gap: 28px;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 10;
 }
 
 .trustItem {
@@ -175,50 +184,6 @@
   flex-shrink: 0;
 }
 
-/* Social Proof */
-.socialProof {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatars {
-  display: flex;
-}
-
-.avatarWrapper {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid #fbf9f8;
-  overflow: hidden;
-  margin-left: -8px;
-  flex-shrink: 0;
-  background-color: #e4e2e1;
-}
-
-.avatarWrapper:first-child {
-  margin-left: 0;
-}
-
-.avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.proofText {
-  font-family: 'Be Vietnam Pro', sans-serif;
-  font-size: 14px;
-  color: #414846;
-  margin: 0;
-}
-
-.proofText strong {
-  color: #01261f;
-  font-weight: 700;
-}
-
 /* ── RIGHT ── */
 .right {
   position: relative;
@@ -228,6 +193,7 @@
   align-items: center;
   gap: 20px;
   padding-left: 32px;
+  pointer-events: auto;
 }
 
 /* Carrossel */
@@ -248,13 +214,15 @@
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.6s ease,
               z-index 0s;
+  pointer-events: none; /* Todos os slides começam sem receber eventos */
 }
 
-/* Frente — slide atual */
+/* Frente — slide atual (recebe eventos apenas para interação com o carrossel) */
 .slideFront {
   transform: translateX(0) scale(1);
   opacity: 1;
   z-index: 3;
+  pointer-events: none; /* Continua sem eventos para não bloquear botões */
 }
 
 /* Próximo — aparece levemente à direita */
@@ -277,7 +245,6 @@
   transform: translateX(16%) scale(0.84);
   opacity: 0;
   z-index: 0;
-  pointer-events: none;
 }
 
 .slideImage {
@@ -300,7 +267,8 @@
   font-family: 'Manrope', sans-serif;
   font-size: 15px;
   font-weight: 600;
-  z-index: 10;
+  z-index: 5;
+  pointer-events: none; /* Label não interfere nos cliques */
 }
 
 /* Botão next */
@@ -318,7 +286,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: 15; /* Acima dos slides */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   transition: transform 0.2s, box-shadow 0.2s;
   color: #1b1c1c;
@@ -334,6 +302,8 @@
   display: flex;
   gap: 8px;
   align-items: center;
+  position: relative;
+  z-index: 10;
 }
 
 .dot {
