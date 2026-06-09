@@ -33,6 +33,7 @@ import { getBrandsAction } from "@/modules/brands/actions/get-brands.action";
 import { getCategoriesAction } from "@/modules/categories/actions/get-categories.action";
 import { MetricsGrid } from "@/app/components";
 import ProductModal from "@/app/components/admin/ProductModal";
+import ProductFilters from "@/app/components/admin/ProductFilters";
 import styles from "@/assets/css/admin/products.module.css";
 
 export default function AdminProductsPage() {
@@ -44,8 +45,16 @@ export default function AdminProductsPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [selectedFilters, setSelectedFilters] = useState({
+    categories: [],
+    brands: [],
+    status: "all",
+    featured: undefined,
+    stockRange: "all",
+  });
 
   const {
     register,
@@ -119,18 +128,62 @@ export default function AdminProductsPage() {
     ];
   }, [products]);
 
-  // Paginação
+  // Aplicar filtros nos produtos
   const filteredProducts = useMemo(() => {
-    if (!search) return products;
-    const searchLower = search.toLowerCase();
-    return products.filter(
-      (product) =>
-        product.name?.toLowerCase().includes(searchLower) ||
-        product.id?.toString().includes(searchLower) ||
-        product.category?.name?.toLowerCase().includes(searchLower)
-    );
-  }, [products, search]);
+    let filtered = [...products];
 
+    // Filtro por busca
+    if (search) {
+      const searchLower = search.toLowerCase();
+      filtered = filtered.filter(
+        (product) =>
+          product.name?.toLowerCase().includes(searchLower) ||
+          product.id?.toString().includes(searchLower) ||
+          product.category?.name?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Filtro por categorias
+    if (selectedFilters.categories.length > 0) {
+      filtered = filtered.filter((product) =>
+        selectedFilters.categories.includes(product.categoryId)
+      );
+    }
+
+    // Filtro por marcas
+    if (selectedFilters.brands.length > 0) {
+      filtered = filtered.filter((product) =>
+        selectedFilters.brands.includes(product.brandId)
+      );
+    }
+
+    // Filtro por status
+    if (selectedFilters.status === "active") {
+      filtered = filtered.filter((product) => product.active === true);
+    } else if (selectedFilters.status === "inactive") {
+      filtered = filtered.filter((product) => product.active === false);
+    }
+
+    // Filtro por destaque
+    if (selectedFilters.featured === true) {
+      filtered = filtered.filter((product) => product.featured === true);
+    } else if (selectedFilters.featured === false) {
+      filtered = filtered.filter((product) => product.featured === false);
+    }
+
+    // Filtro por estoque
+    if (selectedFilters.stockRange === "low") {
+      filtered = filtered.filter((product) => product.stockQuantity <= 5 && product.stockQuantity > 0);
+    } else if (selectedFilters.stockRange === "out") {
+      filtered = filtered.filter((product) => product.stockQuantity === 0);
+    } else if (selectedFilters.stockRange === "in") {
+      filtered = filtered.filter((product) => product.stockQuantity > 0);
+    }
+
+    return filtered;
+  }, [products, search, selectedFilters]);
+
+  // Paginação
   const pageCount = useMemo(() => {
     if (itemsPerPage === -1) return 1;
     return Math.ceil(filteredProducts.length / itemsPerPage);
@@ -156,12 +209,12 @@ export default function AdminProductsPage() {
     fetchProducts();
     fetchBrands();
     fetchCategories();
-  }, [search]);
+  }, []);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const result = await getProductsAction({ search, includeVariants: true });
+      const result = await getProductsAction({ includeVariants: true });
       if (result.success) {
         setProducts(result.data);
       }
@@ -399,7 +452,7 @@ export default function AdminProductsPage() {
   ];
 
   const handleExport = () => {
-    const csvData = products.map(p => ({
+    const csvData = filteredProducts.map(p => ({
       ID: p.id,
       Nome: p.name,
       Preço: p.price,
@@ -419,6 +472,32 @@ export default function AdminProductsPage() {
     a.download = `produtos_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setSelectedFilters(newFilters);
+    setPage(1);
+  };
+
+  const clearAllFilters = () => {
+    setSelectedFilters({
+      categories: [],
+      brands: [],
+      status: "all",
+      featured: undefined,
+      stockRange: "all",
+    });
+    setPage(1);
+  };
+
+  const activeFiltersCount = () => {
+    let count = 0;
+    if (selectedFilters.categories.length) count += selectedFilters.categories.length;
+    if (selectedFilters.brands.length) count += selectedFilters.brands.length;
+    if (selectedFilters.status !== "all") count++;
+    if (selectedFilters.featured !== undefined) count++;
+    if (selectedFilters.stockRange !== "all") count++;
+    return count;
   };
 
   // Loading skeleton
@@ -506,23 +585,34 @@ export default function AdminProductsPage() {
             className={styles.searchInput}
           />
         </div>
-        <button className={styles.filterButton}><Filter size={15} /> Filtros</button>
-        <button className={styles.filterButton}><ArrowUpDown size={15} /> Ordenar</button>
+        <button 
+          className={styles.filterButton} 
+          onClick={() => setIsFilterDrawerOpen(true)}
+        >
+          <Filter size={15} /> 
+          Filtros
+          {activeFiltersCount() > 0 && (
+            <span className={styles.activeFilterBadge}>{activeFiltersCount()}</span>
+          )}
+        </button>
+        <button className={styles.filterButton}>
+          <ArrowUpDown size={15} /> Ordenar
+        </button>
       </div>
 
       {/* Empty State */}
-      {!loading && filteredProducts.length === 0 && (
+      {filteredProducts.length === 0 && (
         <div className={styles.emptyContainer}>
           <Package size={80} className={styles.emptyIcon} />
           <p className={styles.emptyTitle}>Nenhum produto encontrado</p>
           <p className={styles.emptySubtitle}>
-            {search ? "Tente uma busca diferente" : "Clique em 'Novo Produto' para adicionar"}
+            {search || activeFiltersCount() > 0 ? "Tente uma busca diferente ou remova os filtros" : "Clique em 'Novo Produto' para adicionar"}
           </p>
         </div>
       )}
 
       {/* Products Table */}
-      {!loading && filteredProducts.length > 0 && (
+      {filteredProducts.length > 0 && (
         <>
           <div className={styles.tableWrapper}>
             <table className={styles.table}>
@@ -658,6 +748,7 @@ export default function AdminProductsPage() {
         </>
       )}
 
+      {/* Product Modal */}
       <ProductModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -672,6 +763,17 @@ export default function AdminProductsPage() {
         uploading={uploading}
         handleSubmit={handleSubmit}
         onSubmit={handleSubmitForm}
+      />
+
+      {/* Product Filters Drawer */}
+      <ProductFilters
+        isOpen={isFilterDrawerOpen}
+        onClose={() => setIsFilterDrawerOpen(false)}
+        brands={brands}
+        categories={categories}
+        selectedFilters={selectedFilters}
+        onFilterChange={handleFilterChange}
+        onClearFilters={clearAllFilters}
       />
     </div>
   );

@@ -15,77 +15,21 @@ import {
   User,
   Mail,
   Calendar,
-  Shield,
-  ShieldCheck,
-  ShieldAlert,
-  MoreVertical,
-  Eye,
-  EyeOff,
   LayoutDashboard,
   ChevronRight as ChevronRightIcon,
   Download,
   Filter,
   ArrowUpDown,
-  Key,
-  Lock,
-  Unlock,
-  CheckCircle,
-  XCircle,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import styles from "@/assets/css/admin/users.module.css";
 import { useSession } from "next-auth/react";
-
-// Mock data - substituir pela API real
-const mockUsers = [
-  {
-    id: "1",
-    name: "Administrador Master",
-    email: "admin@cantinhotropical.com",
-    role: "SUPER_ADMIN",
-    status: "active",
-    lastLogin: new Date("2024-06-04T10:30:00"),
-    createdAt: new Date("2024-01-15T00:00:00"),
-    avatar: null,
-  },
-  {
-    id: "2",
-    name: "João Silva",
-    email: "joao@cantinhotropical.com",
-    role: "ADMIN",
-    status: "active",
-    lastLogin: new Date("2024-06-03T15:45:00"),
-    createdAt: new Date("2024-02-10T00:00:00"),
-    avatar: null,
-  },
-  {
-    id: "3",
-    name: "Maria Santos",
-    email: "maria@cantinhotropical.com",
-    role: "MANAGER",
-    status: "active",
-    lastLogin: new Date("2024-06-04T09:15:00"),
-    createdAt: new Date("2024-03-20T00:00:00"),
-    avatar: null,
-  },
-  {
-    id: "4",
-    name: "Pedro Costa",
-    email: "pedro@cantinhotropical.com",
-    role: "VIEWER",
-    status: "inactive",
-    lastLogin: new Date("2024-05-28T14:20:00"),
-    createdAt: new Date("2024-04-05T00:00:00"),
-    avatar: null,
-  },
-];
-
-const roleConfig = {
-  SUPER_ADMIN: { label: "Super Admin", color: "#dc2626", bgColor: "rgba(220, 38, 38, 0.1)", icon: ShieldAlert },
-  ADMIN: { label: "Administrador", color: "#f59e0b", bgColor: "rgba(245, 158, 11, 0.1)", icon: ShieldCheck },
-  MANAGER: { label: "Gerente", color: "#3b82f6", bgColor: "rgba(59, 130, 246, 0.1)", icon: Shield },
-  VIEWER: { label: "Visualizador", color: "#10b981", bgColor: "rgba(16, 185, 129, 0.1)", icon: Eye },
-};
+import { getUsersAction } from "@/modules/users/actions/get-users.action";
+import { createUserAction } from "@/modules/users/actions/create-user.action";
+import { updateUserAction } from "@/modules/users/actions/update-user.action";
+import { deleteUserAction } from "@/modules/users/actions/delete-user.action";
 
 export default function AdminUsersPage() {
   const { data: session } = useSession();
@@ -113,8 +57,6 @@ export default function AdminUsersPage() {
       email: "",
       password: "",
       confirmPassword: "",
-      role: "VIEWER",
-      status: "active",
     },
   });
 
@@ -124,9 +66,6 @@ export default function AdminUsersPage() {
   // Calcular métricas
   const metrics = useMemo(() => {
     const totalUsers = users.length;
-    const activeUsers = users.filter((u) => u.status === "active").length;
-    const superAdmins = users.filter((u) => u.role === "SUPER_ADMIN").length;
-    const admins = users.filter((u) => u.role === "ADMIN").length;
 
     return [
       {
@@ -137,25 +76,25 @@ export default function AdminUsersPage() {
         bgColor: "rgba(44, 105, 78, 0.1)",
       },
       {
-        title: "Usuários Ativos",
-        value: activeUsers.toLocaleString(),
-        icon: <CheckCircle size={28} />,
-        color: "#10b981",
-        bgColor: "rgba(16, 185, 129, 0.1)",
-      },
-      {
-        title: "Super Admins",
-        value: superAdmins.toLocaleString(),
-        icon: <ShieldAlert size={28} />,
-        color: "#dc2626",
-        bgColor: "rgba(220, 38, 38, 0.1)",
-      },
-      {
         title: "Administradores",
-        value: admins.toLocaleString(),
-        icon: <ShieldCheck size={28} />,
+        value: totalUsers.toLocaleString(),
+        icon: <User size={28} />,
+        color: "#3b82f6",
+        bgColor: "rgba(59, 130, 246, 0.1)",
+      },
+      {
+        title: "Total de Contas",
+        value: totalUsers.toLocaleString(),
+        icon: <Mail size={28} />,
         color: "#f59e0b",
         bgColor: "rgba(245, 158, 11, 0.1)",
+      },
+      {
+        title: "Cadastrados",
+        value: totalUsers.toLocaleString(),
+        icon: <Calendar size={28} />,
+        color: "#10b981",
+        bgColor: "rgba(16, 185, 129, 0.1)",
       },
     ];
   }, [users]);
@@ -200,9 +139,10 @@ export default function AdminUsersPage() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // Simular API call - substituir pela ação real
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setUsers(mockUsers);
+      const result = await getUsersAction({ search });
+      if (result.success) {
+        setUsers(result.data);
+      }
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -212,16 +152,26 @@ export default function AdminUsersPage() {
 
   const handleSubmitForm = async (data) => {
     try {
+      let result;
       if (data.id) {
-        // Update user logic
-        console.log("Updating user:", data);
+        const updateData = {
+          id: data.id,
+          name: data.name,
+          email: data.email,
+          password: data.password || "",
+        };
+        result = await updateUserAction(updateData);
       } else {
-        // Create user logic
-        console.log("Creating user:", data);
+        result = await createUserAction(data);
       }
-      resetForm();
-      setIsModalOpen(false);
-      fetchUsers();
+      
+      if (result.success) {
+        resetForm();
+        setIsModalOpen(false);
+        fetchUsers();
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       console.error("Error saving user:", error);
       alert(error.message);
@@ -232,10 +182,13 @@ export default function AdminUsersPage() {
     if (!selectedUser) return;
     setDeletingId(selectedUser.id);
     try {
-      // Delete user logic
-      console.log("Deleting user:", selectedUser.id);
-      setIsDeleteModalOpen(false);
-      fetchUsers();
+      const result = await deleteUserAction(selectedUser.id);
+      if (result.success) {
+        setIsDeleteModalOpen(false);
+        fetchUsers();
+      } else {
+        throw new Error(result.error);
+      }
     } catch (error) {
       console.error("Error deleting user:", error);
       alert(error.message);
@@ -252,8 +205,6 @@ export default function AdminUsersPage() {
       email: "",
       password: "",
       confirmPassword: "",
-      role: "VIEWER",
-      status: "active",
     });
     setShowPassword(false);
   };
@@ -270,8 +221,6 @@ export default function AdminUsersPage() {
       email: user.email,
       password: "",
       confirmPassword: "",
-      role: user.role,
-      status: user.status,
     });
     setIsModalOpen(true);
   };
@@ -279,13 +228,6 @@ export default function AdminUsersPage() {
   const openDeleteModal = (user) => {
     setSelectedUser(user);
     setIsDeleteModalOpen(true);
-  };
-
-  const handleToggleStatus = async (user) => {
-    const newStatus = user.status === "active" ? "inactive" : "active";
-    console.log(`Toggling user ${user.id} status to ${newStatus}`);
-    // API call here
-    fetchUsers();
   };
 
   const formatDate = (date) => {
@@ -299,25 +241,11 @@ export default function AdminUsersPage() {
     }).format(new Date(date));
   };
 
-  const getRoleDisplay = (role) => {
-    const config = roleConfig[role] || roleConfig.VIEWER;
-    const Icon = config.icon;
-    return (
-      <span className={styles.roleChip} style={{ backgroundColor: config.bgColor, color: config.color }}>
-        <Icon size={12} />
-        {config.label}
-      </span>
-    );
-  };
-
   const handleExport = () => {
     const csvData = users.map(u => ({
       ID: u.id,
       Nome: u.name,
       Email: u.email,
-      Função: roleConfig[u.role]?.label || u.role,
-      Status: u.status === 'active' ? 'Ativo' : 'Inativo',
-      'Último Acesso': formatDate(u.lastLogin),
       'Data Cadastro': formatDate(u.createdAt),
     }));
     
@@ -371,9 +299,6 @@ export default function AdminUsersPage() {
             <div key={i} className={styles.skeletonRow}>
               <div className={styles.skeletonCell} style={{ width: "200px" }}></div>
               <div className={styles.skeletonCell} style={{ width: "250px" }}></div>
-              <div className={styles.skeletonCell} style={{ width: "120px" }}></div>
-              <div className={styles.skeletonCell} style={{ width: "100px" }}></div>
-              <div className={styles.skeletonCell} style={{ width: "160px" }}></div>
               <div className={styles.skeletonCell} style={{ width: "100px" }}></div>
             </div>
           ))}
@@ -393,7 +318,7 @@ export default function AdminUsersPage() {
           </div>
           <h1 className={styles.title}>Usuários</h1>
           <p className={styles.subtitle}>
-            Gerencie os administradores e permissões do sistema
+            Gerencie os administradores do sistema
           </p>
         </div>
         <div className={styles.headerActions}>
@@ -433,12 +358,6 @@ export default function AdminUsersPage() {
             className={styles.searchInput}
           />
         </div>
-        <button className={styles.filterButton}>
-          <Filter size={15} /> Filtros
-        </button>
-        <button className={styles.filterButton}>
-          <ArrowUpDown size={15} /> Ordenar
-        </button>
       </div>
 
       {/* Empty State */}
@@ -461,9 +380,7 @@ export default function AdminUsersPage() {
                 <tr>
                   <th className={styles.tableHeaderCell}>Usuário</th>
                   <th className={styles.tableHeaderCell}>E-mail</th>
-                  <th className={styles.tableHeaderCell}>Função</th>
-                  <th className={styles.tableHeaderCell}>Status</th>
-                  <th className={styles.tableHeaderCell}>Último Acesso</th>
+                  <th className={styles.tableHeaderCell}>Data Cadastro</th>
                   <th className={styles.tableHeaderCell} style={{ width: "100px" }}>Ações</th>
                 </tr>
               </thead>
@@ -473,15 +390,11 @@ export default function AdminUsersPage() {
                     <td className={styles.tableCell}>
                       <div className={styles.userCell}>
                         <div className={styles.userAvatar}>
-                          {user.avatar ? (
-                            <img src={user.avatar} alt={user.name} />
-                          ) : (
-                            <span>{user.name.charAt(0).toUpperCase()}</span>
-                          )}
+                          <span>{user.name.charAt(0).toUpperCase()}</span>
                         </div>
                         <div>
                           <div className={styles.userName}>{user.name}</div>
-                          <div className={styles.userId}>#{user.id}</div>
+                          <div className={styles.userId}>#{user.id.slice(-8).toUpperCase()}</div>
                         </div>
                       </div>
                     </td>
@@ -492,17 +405,9 @@ export default function AdminUsersPage() {
                       </div>
                     </td>
                     <td className={styles.tableCell}>
-                      {getRoleDisplay(user.role)}
-                    </td>
-                    <td className={styles.tableCell}>
-                      <span className={`${styles.statusChip} ${user.status === 'active' ? styles.activeStatus : styles.inactiveStatus}`}>
-                        {user.status === 'active' ? 'Ativo' : 'Inativo'}
-                      </span>
-                    </td>
-                    <td className={styles.tableCell}>
-                      <div className={styles.lastLoginCell}>
+                      <div className={styles.dateCell}>
                         <Calendar size={12} />
-                        {formatDate(user.lastLogin)}
+                        {formatDate(user.createdAt)}
                       </div>
                     </td>
                     <td className={styles.tableCell}>
@@ -513,13 +418,6 @@ export default function AdminUsersPage() {
                           title="Editar"
                         >
                           <Edit size={14} />
-                        </button>
-                        <button
-                          className={user.status === 'active' ? styles.suspendButton : styles.activateButton}
-                          onClick={() => handleToggleStatus(user)}
-                          title={user.status === 'active' ? 'Desativar' : 'Ativar'}
-                        >
-                          {user.status === 'active' ? <Lock size={14} /> : <Unlock size={14} />}
                         </button>
                         <button
                           className={styles.deleteButton}
@@ -700,24 +598,6 @@ export default function AdminUsersPage() {
                     </div>
                   </>
                 )}
-
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>Função</label>
-                  <select className={styles.formSelect} {...register("role")}>
-                    <option value="SUPER_ADMIN">Super Admin</option>
-                    <option value="ADMIN">Administrador</option>
-                    <option value="MANAGER">Gerente</option>
-                    <option value="VIEWER">Visualizador</option>
-                  </select>
-                </div>
-
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>Status</label>
-                  <select className={styles.formSelect} {...register("status")}>
-                    <option value="active">Ativo</option>
-                    <option value="inactive">Inativo</option>
-                  </select>
-                </div>
               </div>
 
               <div className={styles.modalFooter}>

@@ -17,7 +17,7 @@ const SLIDES = [
   {
     id: 1,
     image: cao,
-    label: "Cães e Gatos"
+    label: "Cães"
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ const SLIDES = [
   {
     id: 3,
     image: aves,
-    label: "Aves Exóticas"
+    label: "Aves"
   },
   {
     id: 4,
