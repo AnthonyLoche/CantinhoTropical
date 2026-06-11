@@ -2,61 +2,117 @@
 "use client";
 
 import { useState } from "react";
+import { useCart } from "@/hooks/useCart";
 import styles from "@/assets/css/cart/cart.module.css";
 import Image from "next/image";
+import Link from "next/link";
 import { HeaderMain, FooterMain } from "@/app/components";
 import { 
   ChevronRight, 
   Trash2, 
   Minus, 
   Plus, 
-  Info, 
-  ArrowRight, 
-  ShieldCheck, 
-  Leaf, 
-  Stethoscope,
-  Lightbulb 
+  ArrowRight,
+  Leaf,
+  ShoppingBag,
+  User,
+  Phone
 } from "lucide-react";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Ração Holística Super Premium - Aves Exóticas",
-      category: "Aves Exóticas",
-      price: 34.5,
-      quantity: 1,
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDMy318cWHdYGGg6ZSQaqTM9yjUqzASdgbTMn7IxXdryNeZENCJqeSVyj8GVCNcvAST8xFDMxcpw1JVhSKdIPAE4_FhIpODiDhfm4_6zzu_7gLwM5Ch_h3eYpk1GfiI6-XyjtvjKwzi2sYru70hEcOPJdMNpVvcPaEJ2ZMGlsv7bNjGQdTzcIqMHS_anRlIiNiwizzqMhuW8atVktvTnlkLfaM3JHIY6VFSbGG0f4nTUb9lFzfvooKASlBSYFoJ0dzCJMkusueOnxc",
-    },
-    {
-      id: 2,
-      name: "Corda de Juta Sustentável",
-      category: "Brinquedos",
-      price: 45.0,
-      quantity: 2,
-      image:
-        "https://lh3.googleusercontent.com/aida-public/AB6AXuDUGv9fMKaXH0KsO4SMwtQ5jxc_rs2M75dkIYnd_k0ZIyTJu0Y3hrCNnkl9189uZfhnXCJehD7R2ZH0F4cvN0OnnPw1Qh-99g0GyBdkmyeWtblVn0pDSkwM-S7NcDCUxjd9zz4mfKUtL_yI8QAdWzB1YP36kt9pbCxE1F8ApyTQRSKJyK8oQmLYscKJ6T_o0qdFCicx5xk1uEL_o98QGh4MkqhfJHk7_0cotzdav_V7Z9Syzu-N_LdygzFbWGhEizgKfgl7IdAMbx4",
-    },
-  ]);
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [errors, setErrors] = useState({ name: false, phone: false });
 
-  const updateQuantity = (id, newQuantity) => {
-    if (newQuantity < 0) return;
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item,
-      ),
+  const {
+    cartItems,
+    updateQuantity,
+    removeItem,
+    clearCart,
+    getTotalItems,
+    getSubtotal,
+  } = useCart();
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat("pt-PT", {
+      style: "currency",
+      currency: "EUR",
+    }).format(price);
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      name: !customerName.trim(),
+      phone: !customerPhone.trim(),
+    };
+    setErrors(newErrors);
+    return !newErrors.name && !newErrors.phone;
+  };
+
+const handleWhatsApp = () => {
+  if (!validateForm()) {
+    return;
+  }
+
+  const message = cartItems
+    .map((item) => {
+      return `${item.name} 
+*Quantidade:* ${item.quantity} ;
+*Valor:* ${formatPrice(item.price * item.quantity)} ;
+==========`;
+    })
+    .join("\n\n");
+
+  const totalItems = getTotalItems();
+  const subtotal = getSubtotal();
+
+  const fullMessage = `Olá! Gostaria de solicitar os seguintes produtos:
+
+${message}
+
+*Total de itens:* ${totalItems}
+*Total:* ${formatPrice(subtotal)}
+
+*Dados do Cliente:*
+*Nome:* ${customerName}
+*Telefone:* ${customerPhone}
+
+*Obrigado!*`;
+
+  const encodedMessage = encodeURIComponent(fullMessage);
+  console.log(fullMessage);
+  console.log(encodedMessage);
+  window.open(`https://wa.me/5547992236761?text=${encodedMessage}`, "_blank");
+};
+  // Carrinho vazio
+  if (cartItems.length === 0) {
+    return (
+      <>
+        <HeaderMain />
+        <main className={styles.main}>
+          <nav className={styles.breadcrumbs}>
+            <Link href="/" className={styles.breadcrumbLink}>Home</Link>
+            <ChevronRight size={16} className={styles.breadcrumbIcon} />
+            <Link href="/catalog" className={styles.breadcrumbLink}>Loja</Link>
+            <ChevronRight size={16} className={styles.breadcrumbIcon} />
+            <span className={styles.breadcrumbActive}>Carrinho</span>
+          </nav>
+
+          <div className={styles.emptyCart}>
+            <ShoppingBag size={64} className={styles.emptyIcon} />
+            <h2 className={styles.emptyTitle}>Seu carrinho está vazio</h2>
+            <p className={styles.emptyText}>
+              Parece que você ainda não adicionou nenhum produto ao carrinho.
+            </p>
+            <Link href="/catalog" className={styles.shopBtn}>
+              Ver Produtos
+            </Link>
+          </div>
+        </main>
+        <FooterMain />
+      </>
     );
-  };
-
-  const removeItem = (id) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
-  };
-
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
+  }
 
   return (
     <>
@@ -64,18 +120,19 @@ export default function CartPage() {
 
       <main className={styles.main}>
         <nav className={styles.breadcrumbs}>
-          <a href="#" className={styles.breadcrumbLink}>
-            Home
-          </a>
+          <Link href="/" className={styles.breadcrumbLink}>Home</Link>
           <ChevronRight size={16} className={styles.breadcrumbIcon} />
-          <a href="#" className={styles.breadcrumbLink}>
-            Loja
-          </a>
+          <Link href="/catalog" className={styles.breadcrumbLink}>Loja</Link>
           <ChevronRight size={16} className={styles.breadcrumbIcon} />
           <span className={styles.breadcrumbActive}>Carrinho</span>
         </nav>
 
-        <h1 className={styles.title}>O Seu Carrinho</h1>
+        <div className={styles.cartHeader}>
+          <h1 className={styles.title}>O Seu Carrinho</h1>
+          <button className={styles.clearCartBtn} onClick={clearCart}>
+            Limpar Carrinho
+          </button>
+        </div>
 
         <div className={styles.grid}>
           {/* Product List Area */}
@@ -83,20 +140,21 @@ export default function CartPage() {
             {cartItems.map((item) => (
               <div key={item.id} className={styles.productItem}>
                 <div className={styles.productImage}>
-                  <Image
-                    src={item.image}
-                    alt={item.name}
-                    width={128}
-                    height={128}
-                    className={styles.image}
-                  />
+                  {item.imageUrl ? (
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.name}
+                      width={128}
+                      height={128}
+                      className={styles.image}
+                    />
+                  ) : (
+                    <div className={styles.imagePlaceholder}>📷</div>
+                  )}
                 </div>
                 <div className={styles.productDetails}>
                   <div className={styles.productHeader}>
                     <div>
-                      <span className={styles.productCategory}>
-                        {item.category}
-                      </span>
                       <h3 className={styles.productName}>{item.name}</h3>
                     </div>
                     <button
@@ -127,24 +185,12 @@ export default function CartPage() {
                       </button>
                     </div>
                     <div className={styles.price}>
-                      {(item.price * item.quantity).toFixed(2)}€
+                      {formatPrice(item.price * item.quantity)}
                     </div>
                   </div>
                 </div>
               </div>
             ))}
-
-            {/* Empty State */}
-            {cartItems.length === 0 && (
-              <div className={styles.emptyState}>
-                <Leaf size={48} className={styles.emptyIcon} />
-                <p className={styles.emptyTitle}>À procura de mais?</p>
-                <p className={styles.emptyText}>
-                  Explore a nossa seleção botânica curada para os seus
-                  companheiros.
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Summary Sidebar */}
@@ -152,28 +198,68 @@ export default function CartPage() {
             <div className={styles.summaryCard}>
               <h2 className={styles.summaryTitle}>Resumo da Encomenda</h2>
 
-              <div className={styles.summaryDetails}>
-                <div className={styles.summaryRow}>
-                  <span className={styles.summaryLabel}>Subtotal</span>
-                  <span>{subtotal.toFixed(2)}€</span>
+              {/* Customer Info Form */}
+              <div className={styles.customerForm}>
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>
+                    <User size={16} />
+                    Seu Nome
+                  </label>
+                  <input
+                    type="text"
+                    className={`${styles.formInput} ${errors.name ? styles.formInputError : ""}`}
+                    placeholder="Digite seu nome completo"
+                    value={customerName}
+                    onChange={(e) => {
+                      setCustomerName(e.target.value);
+                      if (errors.name) setErrors({ ...errors, name: false });
+                    }}
+                  />
+                  {errors.name && (
+                    <span className={styles.errorText}>Nome é obrigatório</span>
+                  )}
                 </div>
 
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>
+                    <Phone size={16} />
+                    Seu Telefone
+                  </label>
+                  <input
+                    type="tel"
+                    className={`${styles.formInput} ${errors.phone ? styles.formInputError : ""}`}
+                    placeholder="(00) 00000-0000"
+                    value={customerPhone}
+                    onChange={(e) => {
+                      setCustomerPhone(e.target.value);
+                      if (errors.phone) setErrors({ ...errors, phone: false });
+                    }}
+                  />
+                  {errors.phone && (
+                    <span className={styles.errorText}>Telefone é obrigatório</span>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.summaryDetails}>
                 <div className={styles.summaryTotal}>
                   <span>Total</span>
-                  <span>{subtotal.toFixed(2)}€</span>
+                  <span>{formatPrice(getSubtotal())}</span>
                 </div>
               </div>
 
               <div className={styles.checkoutActions}>
-                <button className={styles.checkoutBtn}>
-                  Finalizar Compra
+                <button 
+                  className={styles.whatsappBtn} 
+                  onClick={handleWhatsApp}
+                >
+                  Finalizar pelo WhatsApp
                   <ArrowRight size={20} />
                 </button>
-                <a href="#" className={styles.continueBtn}>
+                <Link href="/catalog" className={styles.continueBtn}>
                   Continuar a Comprar
-                </a>
+                </Link>
               </div>
-
             </div>
           </div>
         </div>

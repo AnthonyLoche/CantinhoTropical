@@ -917,3 +917,96 @@
     padding: 32px;
   }
 }
+
+/* Adicione ao final do arquivo Product.module.css */
+
+.cartActions {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.quantitySelector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f5f3f2;
+  border-radius: 9999px;
+  padding: 0.25rem;
+}
+
+.qtyBtn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+
+.qtyBtn:hover:not(:disabled) {
+  background-color: #e4e2e1;
+}
+
+.qtyBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity {
+  min-width: 2.5rem;
+  text-align: center;
+  font-family: "Manrope", sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #01261f;
+}
+
+.addToCartBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background-color: #01261f;
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.addToCartBtn:hover {
+  background-color: #1a3c34;
+  transform: scale(1.02);
+}
+
+.featuresList {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e4e2e1;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Be Vietnam Pro", sans-serif;
+  font-size: 0.875rem;
+  color: #414846;
+}
+
+.featureIcon {
+  color: #2c694e;
+}

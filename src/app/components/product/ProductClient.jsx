@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import styles from "@/assets/css/product/Product.module.css";
 import { getProductsAction } from "@/modules/products/actions/get-products.action";
+import { useCart } from "@/hooks/useCart"; // Importar o hook
 
 export default function ProductClient({ product }) {
   const [quantity, setQuantity] = useState(1);
@@ -29,6 +30,7 @@ export default function ProductClient({ product }) {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [loadingRelated, setLoadingRelated] = useState(true);
+  const { addItem, openDrawer } = useCart(); // Usar o carrinho
 
   // Verifica se o produto tem variantes
   const hasVariants = product.variants && product.variants.length > 0;
@@ -82,6 +84,28 @@ export default function ProductClient({ product }) {
     setQuantity(1);
   };
 
+  // Função para adicionar ao carrinho
+  const handleAddToCart = () => {
+    const productToAdd = selectedVariant 
+      ? {
+          id: selectedVariant.id,
+          name: `${product.name} - ${selectedVariant.label}`,
+          slug: product.slug || product.id,
+          imageUrl: product.imageUrl,
+          price: selectedVariant.price,
+        }
+      : {
+          id: product.id,
+          name: product.name,
+          slug: product.slug || product.id,
+          imageUrl: product.imageUrl,
+          price: product.price,
+        };
+    
+    addItem(productToAdd, quantity);
+    openDrawer(); // Abre o drawer do carrinho
+  };
+
   const tabs = [
     { id: "description", label: "Descrição" },
     { id: "ingredients", label: "Ingredientes" },
@@ -98,7 +122,7 @@ export default function ProductClient({ product }) {
   // Garantir que temos um array de imagens
   const images = product.imageUrl ? [product.imageUrl] : [];
   
-  // Características do produto (mock - pode vir da API)
+  // Características do produto
   const features = [
     { icon: Leaf, text: "100% Orgânico" },
     { icon: ShieldCheck, text: "Vet Approved" },
@@ -202,6 +226,45 @@ export default function ProductClient({ product }) {
                 </div>
               </div>
             )}
+
+            {/* Quantity Selector and Add to Cart */}
+            <div className={styles.cartActions}>
+              <div className={styles.quantitySelector}>
+                <button 
+                  className={styles.qtyBtn}
+                  onClick={() => updateQuantity(-1)}
+                  disabled={quantity <= 1}
+                >
+                  <Minus size={16} />
+                </button>
+                <span className={styles.quantity}>{quantity}</span>
+                <button 
+                  className={styles.qtyBtn}
+                  onClick={() => updateQuantity(1)}
+                  disabled={quantity >= (displayStock || 99)}
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+
+              <button 
+                className={styles.addToCartBtn}
+                onClick={handleAddToCart}
+              >
+                <ShoppingCart size={20} />
+                Adicionar ao Carrinho
+              </button>
+            </div>
+
+            {/* Features */}
+            <div className={styles.featuresList}>
+              {features.map((feature, idx) => (
+                <div key={idx} className={styles.featureItem}>
+                  <feature.icon size={18} className={styles.featureIcon} />
+                  <span>{feature.text}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -226,8 +289,7 @@ export default function ProductClient({ product }) {
                   <p className={styles.tabText}>
                     {product.description || "Descrição detalhada do produto em breve."}
                   </p>
-                  
-                 </>
+                </>
               )}
 
               {/* Ingredientes */}
