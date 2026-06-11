@@ -257,13 +257,15 @@ export default function AdminProductsPage() {
 
   const handleSubmitCreate = async (data) => {
     try {
-      let imageUrl = data.image;
+      let imageUrl = "";
       
+      // Se tem um arquivo de imagem, faz upload primeiro
       if (data.image instanceof File) {
         setUploading(true);
         const formData = new FormData();
         formData.append("image", data.image);
         formData.append("type", "product");
+        
         const uploadResult = await uploadImageAction(formData);
         if (uploadResult.success) {
           imageUrl = uploadResult.data.url;
@@ -271,6 +273,11 @@ export default function AdminProductsPage() {
           throw new Error(uploadResult.error);
         }
         setUploading(false);
+      } else if (typeof data.image === 'string' && data.image.trim() !== '') {
+        // Já é uma URL (caso de edição sem alterar imagem)
+        imageUrl = data.image;
+      } else {
+        throw new Error("Selecione uma imagem para o produto");
       }
 
       const variants = (data.variants || [])
@@ -286,7 +293,7 @@ export default function AdminProductsPage() {
         description: data.description,
         price: parseFloat(data.price),
         stockQuantity: parseInt(data.stock),
-        image: imageUrl,
+        image: imageUrl, // Agora é string, não File
         active: data.active === true || data.active === "true",
         featured: data.featured === true || data.featured === "true",
         brandId: data.brandId,
@@ -313,23 +320,29 @@ export default function AdminProductsPage() {
 
   const handleSubmitEdit = async (data) => {
     try {
-      let imageUrl = data.image;
+      let imageUrl = data.oldImage || "";
       
+      // Se tem um novo arquivo de imagem, faz upload
       if (data.image instanceof File) {
         setUploading(true);
         const formData = new FormData();
         formData.append("image", data.image);
         formData.append("type", "product");
+        
         const uploadResult = await uploadImageAction(formData);
         if (uploadResult.success) {
           imageUrl = uploadResult.data.url;
-          if (data.oldImage) {
+          // Deleta a imagem antiga se existir e for diferente da nova
+          if (data.oldImage && data.oldImage !== imageUrl) {
             await deleteImageAction({ url: data.oldImage });
           }
         } else {
           throw new Error(uploadResult.error);
         }
         setUploading(false);
+      } else if (typeof data.image === 'string' && data.image.trim() !== '') {
+        // Mantém a imagem existente (já é URL)
+        imageUrl = data.image;
       }
 
       const variants = (data.variants || [])
@@ -389,6 +402,11 @@ export default function AdminProductsPage() {
       setDeletingId(null);
     }
   };
+
+  const handleFileChange = (file) => {
+  setValue("image", file);
+};
+
 
   const resetForm = () => {
     reset({
@@ -760,6 +778,7 @@ export default function AdminProductsPage() {
         uploading={uploading}
         handleSubmit={handleSubmit}
         onSubmit={handleSubmitForm}
+        onFileChange={handleFileChange}
       />
 
       {/* Product Filters Drawer */}

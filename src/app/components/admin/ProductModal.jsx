@@ -19,6 +19,7 @@ export default function ProductModal({
   uploading,
   handleSubmit,
   onSubmit,
+  onFileChange,
 }) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -104,9 +105,8 @@ export default function ProductModal({
                 className={styles.fileInput}
                 onChange={(e) => {
                   const file = e.target.files[0];
-                  if (file) {
-                    const event = { target: { value: file } };
-                    register("image").onChange(event);
+                  if (file && onFileChange) {
+                    onFileChange(file);
                   }
                 }}
               />
