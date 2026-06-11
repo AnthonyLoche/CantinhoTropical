@@ -231,7 +231,7 @@
 
 @media (max-width: 768px) {
   .mainBar {
-    flex-direction: column;
+    flex-direction: row;
     gap: 16px;
     padding: 16px;
   }
@@ -364,4 +364,228 @@
   justify-content: center;
   padding: 0 0.25rem;
   font-family: "Be Vietnam Pro", sans-serif;
+}
+
+/* ── Hamburger (só mobile) ── */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #1b1c1c;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+}
+
+.hamburger:hover {
+  background-color: #f0eded;
+}
+
+/* ── Overlay ── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  z-index: 98;
+  pointer-events: none;
+  transition: background 0.35s ease;
+}
+
+.overlayVisible {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: all;
+}
+
+/* ── Drawer ── */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100dvh;
+  background: #ffffff;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow-y: auto;
+}
+
+.drawerOpen {
+  transform: translateX(0);
+}
+
+/* Drawer header */
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #e4e2e1;
+}
+
+.closeBtn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e4e2e1;
+  background: transparent;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #414846;
+  transition: background-color 0.2s;
+}
+
+.closeBtn:hover {
+  background-color: #f0eded;
+}
+
+/* Search no drawer */
+.drawerSearch {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e4e2e1;
+}
+
+/* Nav links do drawer */
+.drawerNav {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 12px;
+}
+
+.drawerLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 12px;
+  border-radius: 10px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #414846;
+  text-decoration: none;
+  transition: background-color 0.15s;
+}
+
+.drawerLink:hover {
+  background-color: #f5f3f2;
+  color: #01261f;
+}
+
+.drawerLinkActive {
+  color: #2c694e;
+  background-color: #e8f5ee;
+}
+
+.drawerLinkActive:hover {
+  background-color: #e8f5ee;
+}
+
+.drawerChevron {
+  color: #c1c8c4;
+  flex-shrink: 0;
+}
+
+/* Divider */
+.drawerDivider {
+  height: 1px;
+  background: #e4e2e1;
+  margin: 4px 20px 12px;
+}
+
+/* Ações do drawer (carrinho, login) */
+.drawerActions {
+  display: flex;
+  flex-direction: column;
+  padding: 0 12px 24px;
+  gap: 2px;
+}
+
+.drawerActionBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #414846;
+  text-decoration: none;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.15s;
+}
+
+.drawerActionBtn:hover {
+  background-color: #f5f3f2;
+  color: #01261f;
+}
+
+.drawerActionIcon {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: #f0eded;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #01261f;
+  flex-shrink: 0;
+}
+
+/* ── Breakpoints ── */
+@media (max-width: 768px) {
+  /* Esconde nav e actions no mobile */
+  .nav,
+  .actions {
+    display: none;
+  }
+
+  /* Mostra hamburger */
+  .hamburger {
+    display: flex;
+  }
+
+  /* Header não vira floating no mobile */
+  .scrolled {
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .scrolled .mainBar {
+    padding: 12px 20px;
+  }
+
+  .mainBar {
+    padding: 12px 20px;
+  }
+
+  .logoText {
+    font-size: 17px;
+  }
+}
+
+@media (min-width: 769px) {
+  /* Esconde hamburger e drawer no desktop */
+  .hamburger,
+  .overlay,
+  .drawer {
+    display: none;
+  }
 }
