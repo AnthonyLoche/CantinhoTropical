@@ -2,6 +2,7 @@ import { BrandRepository } from '../repositories/brand.repository';
 import { BrandDTO } from '../dtos/brand.dto.js';
 import { z } from 'zod';
 import { createBrandSchema, updateBrandSchema } from '../validations/index'; // We'll create this file next
+import { prisma } from '@/lib/prisma';
 
 /**
  * Brand Service
