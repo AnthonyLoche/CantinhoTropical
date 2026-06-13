@@ -1,24 +1,68 @@
 "use client";
-export const dynamic = "force-dynamic";
 
-import { Suspense } from "react";
-import { HeaderMain, HeroCatalog, FooterMain, Reveal } from "../../components";
+import { useEffect, useState } from "react";
 import { getCategoriesAction } from "@/modules/categories/actions/get-categories.action";
 import { getProductsAction } from "@/modules/products/actions/get-products.action";
 import { getBrandsAction } from "@/modules/brands/actions/get-brands.action";
+
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import CatalogWrapper from "@/app/components/catalog/CatalogWrapper";
 
-async function CatalogContent() {
-  const [categoriesResult, productsResult, brandsResult] = await Promise.all([
-    getCategoriesAction(),
-    getProductsAction({ activeOnly: true }),
-    getBrandsAction(),
-  ]);
+export default function Catalog() {
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const categories = categoriesResult.success ? categoriesResult.data : [];
-  const products = productsResult.success ? productsResult.data : [];
-  const brands = brandsResult.success ? brandsResult.data : [];
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadData() {
+      try {
+        const [categoriesResult, productsResult, brandsResult] =
+          await Promise.all([
+            getCategoriesAction(),
+            getProductsAction({ activeOnly: true }),
+            getBrandsAction(),
+          ]);
+
+        if (!isMounted) return;
+
+        setCategories(
+          categoriesResult.success ? categoriesResult.data : []
+        );
+
+        setProducts(
+          productsResult.success ? productsResult.data : []
+        );
+
+        setBrands(
+          brandsResult.success ? brandsResult.data : []
+        );
+      } catch (error) {
+        console.error("Error loading catalog:", error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <LoadingOverlay
+        isLoading={true}
+        message="Carregando catálogo..."
+      />
+    );
+  }
 
   return (
     <CatalogWrapper
@@ -26,13 +70,5 @@ async function CatalogContent() {
       initialProducts={products}
       initialBrands={brands}
     />
-  );
-}
-
-export default function Catalog() {
-  return (
-    <Suspense fallback={<LoadingOverlay isLoading={true} message="Carregando catálogo..." />}>
-      <CatalogContent />
-    </Suspense>
   );
 }
