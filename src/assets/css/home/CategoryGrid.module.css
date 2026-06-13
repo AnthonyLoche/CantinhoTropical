@@ -36,24 +36,112 @@
   margin: 0 auto;
 }
 
-/* Bento Grid */
 .grid {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(2, 280px);
   gap: 24px;
 }
 
+/* Mobile: 1 coluna */
+@media (max-width: 768px) {
+  .section {
+    padding: 64px 24px;
+    border-radius: 40px;
+    width: 95%;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .heading {
+    margin-bottom: 40px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    padding: 0 16px;
+  }
+
+  .card {
+    grid-column: span 1 !important;
+  }
+
+  .cardOverlay {
+    padding: 20px;
+  }
+
+  .cardLabel {
+    font-size: 18px;
+  }
+}
+
+/* Tablet: 2 colunas */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .section {
+    padding: 50px 32px;
+    width: 90%;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .card {
+    grid-column: span 1 !important;
+  }
+
+  .cardOverlay {
+    padding: 24px;
+  }
+
+  .cardLabel {
+    font-size: 20px;
+  }
+}
+
+/* Desktop: grid dinâmico via CSS variable */
+@media (min-width: 1201px) {
+  .grid {
+    grid-template-columns: var(--grid-cols-desktop, repeat(3, 1fr));
+  }
+
+  .card {
+    grid-column: span var(--card-span, 1);
+  }
+}
+
+/* Card */
 .card {
   position: relative;
   overflow: hidden;
   border-radius: 16px;
   cursor: pointer;
   box-shadow: 0 10px 40px -15px rgba(1, 38, 31, 0.15);
+  aspect-ratio: 4 / 3;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: block;
+  text-decoration: none;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px -15px rgba(1, 38, 31, 0.3);
 }
 
 .card:hover .cardImage {
   transform: scale(1.08);
+}
+
+.cardImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .cardImage {
@@ -77,36 +165,11 @@
   font-size: 22px;
   font-weight: 600;
   color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin: 0;
 }
 
-/* Column spans */
-.col3 { grid-column: span 3; }
-.col4 { grid-column: span 4; }
-.col5 { grid-column: span 5; }
-.col6 { grid-column: span 6; }
-
-@media (max-width: 768px) {
-  .section {
-    padding: 64px 24px;
-    border-radius: 40px;
-  }
-
-  .grid {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: repeat(3, 200px);
-  }
-
-  .col3,
-  .col4,
-  .col5,
-  .col6 {
-    grid-column: span 1;
-  }
-}
-
-/* Adicione estas classes ao seu CSS existente */
-
-/* Skeleton Loading */
+/* Skeleton */
 .skeletonTitle {
   width: 400px;
   height: 48px;
@@ -139,6 +202,8 @@
 
 .skeletonCard {
   position: relative;
+  pointer-events: none;
+  aspect-ratio: 4 / 3;
 }
 
 .skeletonImage {
@@ -147,6 +212,7 @@
   background: linear-gradient(90deg, #f0eded 25%, #e4e2e1 50%, #f0eded 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+  border-radius: 16px;
 }
 
 .skeletonLabel {
@@ -158,19 +224,18 @@
   border-radius: 20px;
 }
 
-/* Placeholder Image */
-.placeholderImage {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(135deg, #f0eded 0%, #e4e2e1 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-/* Shimmer Animation */
-@keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+@media (max-width: 768px) {
+  .skeletonTitle    { width: 250px; height: 36px; }
+  .skeletonSubtitle { width: 280px; height: 48px; }
+  .skeletonDivider  { width: 60px; }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+  .skeletonTitle    { width: 350px; }
+  .skeletonSubtitle { width: 450px; }
 }
