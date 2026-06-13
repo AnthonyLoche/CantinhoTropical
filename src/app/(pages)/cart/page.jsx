@@ -82,7 +82,7 @@ ${message}
   const encodedMessage = encodeURIComponent(fullMessage);
   console.log(fullMessage);
   console.log(encodedMessage);
-  window.open(`https://wa.me/5547992236761?text=${encodedMessage}`, "_blank");
+  window.open(`https://wa.me/351915290212?text=${encodedMessage}`, "_blank");
 };
   // Carrinho vazio
   if (cartItems.length === 0) {
