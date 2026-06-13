@@ -1,3 +1,6 @@
+"use client";
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import { HeaderMain, HeroCatalog, FooterMain, Reveal } from "../../components";
 import { getCategoriesAction } from "@/modules/categories/actions/get-categories.action";
