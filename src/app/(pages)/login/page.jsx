@@ -3,18 +3,27 @@
 import { useState } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
-import { 
-  Trees, 
-  ArrowLeft, 
-  Lock, 
-  Mail, 
-  Key, 
-  Eye, 
-  EyeOff, 
+import {
+  Trees,
+  ArrowLeft,
+  Lock,
+  Mail,
+  Key,
+  Eye,
+  EyeOff,
   LogIn,
-  Shield 
+  Shield,
 } from "lucide-react";
 import styles from "../../../assets/css/login/page.module.css";
+
+export const metadata = {
+  title: "Área de Cliente",
+
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +35,7 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     setLoading(true);
     setError("");
 
@@ -66,7 +75,8 @@ export default function LoginPage() {
           <div className={styles.quoteWrapper}>
             <div className={styles.quoteLine}></div>
             <p className={styles.quoteText}>
-              Onde a biodiversidade encontra o cuidado especializado para quem você mais ama.
+              Onde a biodiversidade encontra o cuidado especializado para quem
+              você mais ama.
             </p>
             <p className={styles.quoteSubtext}>
               Manual de Boas Práticas &amp; Curadoria Pet
@@ -145,13 +155,13 @@ export default function LoginPage() {
               </Link>
             </div>
 
-            {error && (
-              <p className={styles.errorMessage}>
-                {error}
-              </p>
-            )}
+            {error && <p className={styles.errorMessage}>{error}</p>}
 
-            <button type="submit" className={styles.submitBtn} disabled={loading}>
+            <button
+              type="submit"
+              className={styles.submitBtn}
+              disabled={loading}
+            >
               {loading ? "Entrando..." : "Entrar no Painel"}
               <LogIn size={20} />
             </button>

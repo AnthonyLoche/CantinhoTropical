@@ -8,6 +8,17 @@ import { getBrandsAction } from "@/modules/brands/actions/get-brands.action";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import CatalogWrapper from "@/app/components/catalog/CatalogWrapper";
 
+export const metadata = {
+  title: "Catálogo",
+
+  description:
+    "Explore o catálogo do Cantinho Tropical Pet Shop. Produtos para cães, gatos, aves, roedores, peixes e répteis.",
+
+  alternates: {
+    canonical: "/catalog",
+  },
+};
+
 export default function Catalog() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -28,17 +39,11 @@ export default function Catalog() {
 
         if (!isMounted) return;
 
-        setCategories(
-          categoriesResult.success ? categoriesResult.data : []
-        );
+        setCategories(categoriesResult.success ? categoriesResult.data : []);
 
-        setProducts(
-          productsResult.success ? productsResult.data : []
-        );
+        setProducts(productsResult.success ? productsResult.data : []);
 
-        setBrands(
-          brandsResult.success ? brandsResult.data : []
-        );
+        setBrands(brandsResult.success ? brandsResult.data : []);
       } catch (error) {
         console.error("Error loading catalog:", error);
       } finally {
@@ -56,12 +61,7 @@ export default function Catalog() {
   }, []);
 
   if (loading) {
-    return (
-      <LoadingOverlay
-        isLoading={true}
-        message="Carregando catálogo..."
-      />
-    );
+    return <LoadingOverlay isLoading={true} message="Carregando catálogo..." />;
   }
 
   return (

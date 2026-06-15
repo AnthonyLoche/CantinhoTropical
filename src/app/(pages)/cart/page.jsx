@@ -7,17 +7,26 @@ import styles from "@/assets/css/cart/cart.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { HeaderMain, FooterMain } from "@/app/components";
-import { 
-  ChevronRight, 
-  Trash2, 
-  Minus, 
-  Plus, 
+import {
+  ChevronRight,
+  Trash2,
+  Minus,
+  Plus,
   ArrowRight,
   Leaf,
   ShoppingBag,
   User,
-  Phone
+  Phone,
 } from "lucide-react";
+
+export const metadata = {
+  title: "Carrinho",
+
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function CartPage() {
   const [customerName, setCustomerName] = useState("");
@@ -49,24 +58,24 @@ export default function CartPage() {
     return !newErrors.name && !newErrors.phone;
   };
 
-const handleWhatsApp = () => {
-  if (!validateForm()) {
-    return;
-  }
+  const handleWhatsApp = () => {
+    if (!validateForm()) {
+      return;
+    }
 
-  const message = cartItems
-    .map((item) => {
-      return `${item.name} 
+    const message = cartItems
+      .map((item) => {
+        return `${item.name} 
 *Quantidade:* ${item.quantity} ;
 *Valor:* ${formatPrice(item.price * item.quantity)} ;
 ==========`;
-    })
-    .join("\n\n");
+      })
+      .join("\n\n");
 
-  const totalItems = getTotalItems();
-  const subtotal = getSubtotal();
+    const totalItems = getTotalItems();
+    const subtotal = getSubtotal();
 
-  const fullMessage = `Olá! Gostaria de solicitar os seguintes produtos:
+    const fullMessage = `Olá! Gostaria de solicitar os seguintes produtos:
 
 ${message}
 
@@ -79,11 +88,11 @@ ${message}
 
 *Obrigado!*`;
 
-  const encodedMessage = encodeURIComponent(fullMessage);
-  console.log(fullMessage);
-  console.log(encodedMessage);
-  window.open(`https://wa.me/351915290212?text=${encodedMessage}`, "_blank");
-};
+    const encodedMessage = encodeURIComponent(fullMessage);
+    console.log(fullMessage);
+    console.log(encodedMessage);
+    window.open(`https://wa.me/351915290212?text=${encodedMessage}`, "_blank");
+  };
   // Carrinho vazio
   if (cartItems.length === 0) {
     return (
@@ -91,9 +100,13 @@ ${message}
         <HeaderMain />
         <main className={styles.main}>
           <nav className={styles.breadcrumbs}>
-            <Link href="/" className={styles.breadcrumbLink}>Home</Link>
+            <Link href="/" className={styles.breadcrumbLink}>
+              Home
+            </Link>
             <ChevronRight size={16} className={styles.breadcrumbIcon} />
-            <Link href="/catalog" className={styles.breadcrumbLink}>Loja</Link>
+            <Link href="/catalog" className={styles.breadcrumbLink}>
+              Loja
+            </Link>
             <ChevronRight size={16} className={styles.breadcrumbIcon} />
             <span className={styles.breadcrumbActive}>Carrinho</span>
           </nav>
@@ -120,9 +133,13 @@ ${message}
 
       <main className={styles.main}>
         <nav className={styles.breadcrumbs}>
-          <Link href="/" className={styles.breadcrumbLink}>Home</Link>
+          <Link href="/" className={styles.breadcrumbLink}>
+            Home
+          </Link>
           <ChevronRight size={16} className={styles.breadcrumbIcon} />
-          <Link href="/catalog" className={styles.breadcrumbLink}>Loja</Link>
+          <Link href="/catalog" className={styles.breadcrumbLink}>
+            Loja
+          </Link>
           <ChevronRight size={16} className={styles.breadcrumbIcon} />
           <span className={styles.breadcrumbActive}>Carrinho</span>
         </nav>
@@ -236,7 +253,9 @@ ${message}
                     }}
                   />
                   {errors.phone && (
-                    <span className={styles.errorText}>Telefone é obrigatório</span>
+                    <span className={styles.errorText}>
+                      Telefone é obrigatório
+                    </span>
                   )}
                 </div>
               </div>
@@ -249,10 +268,7 @@ ${message}
               </div>
 
               <div className={styles.checkoutActions}>
-                <button 
-                  className={styles.whatsappBtn} 
-                  onClick={handleWhatsApp}
-                >
+                <button className={styles.whatsappBtn} onClick={handleWhatsApp}>
                   Finalizar pelo WhatsApp
                   <ArrowRight size={20} />
                 </button>

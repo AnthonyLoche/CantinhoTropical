@@ -9,8 +9,20 @@ import {
   PetHotelSection,
   LocationSection,
   FooterMain,
-  Reveal
+  Reveal,
 } from "../components";
+
+export const metadata = {
+  title:
+    "Cantinho Tropical Pet Shop | Produtos e Serviços para Animais em Mafra",
+
+  description:
+    "Cantinho Tropical Pet Shop em Mafra e Ericeira. Alimentação, acessórios, aquariofilia, aves exóticas, cães, gatos, roedores, répteis e hotel para animais.",
+
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function Home() {
   return (
