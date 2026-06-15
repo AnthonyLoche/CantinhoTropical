@@ -19,15 +19,6 @@ import {
   Phone,
 } from "lucide-react";
 
-export const metadata = {
-  title: "Carrinho",
-
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
 export default function CartPage() {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");

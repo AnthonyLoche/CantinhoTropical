@@ -16,15 +16,6 @@ import {
 } from "lucide-react";
 import styles from "../../../assets/css/login/page.module.css";
 
-export const metadata = {
-  title: "Área de Cliente",
-
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
-
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");

@@ -8,17 +8,6 @@ import { getBrandsAction } from "@/modules/brands/actions/get-brands.action";
 import LoadingOverlay from "@/app/components/ui/LoadingOverlay";
 import CatalogWrapper from "@/app/components/catalog/CatalogWrapper";
 
-export const metadata = {
-  title: "Catálogo",
-
-  description:
-    "Explore o catálogo do Cantinho Tropical Pet Shop. Produtos para cães, gatos, aves, roedores, peixes e répteis.",
-
-  alternates: {
-    canonical: "/catalog",
-  },
-};
-
 export default function Catalog() {
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
