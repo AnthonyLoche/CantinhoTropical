@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, Clock, Phone, ExternalLink } from "lucide-react";
+import { MapPin, Clock, Phone, ExternalLink, Mail } from "lucide-react";
 import styles from "../../../assets/css/home/LocationSection.module.css";
 
 export default function LocationSection() {
@@ -96,7 +96,7 @@ export default function LocationSection() {
           />
         </div>
         <div className={styles.content}>
-          <h2 className={styles.title}>Visite o nosso refúgio</h2>
+          <h2 className={styles.title}>Apoio ao cliente</h2>
           <div className={styles.infoList}>
             <div className={styles.infoItem}>
               <div className={styles.iconWrapper}>
@@ -137,6 +137,15 @@ export default function LocationSection() {
               <div>
                 <h6 className={styles.infoTitle}>Contactos</h6>
                 <p className={styles.infoText}>+351 915 290 212</p>
+              </div>
+            </div>
+                        <div className={styles.infoItem}>
+              <div className={styles.iconWrapper}>
+                <Mail className={styles.infoIcon} />
+              </div>
+              <div>
+                <h6 className={styles.infoTitle}>Email</h6>
+                <p className={styles.infoText}>cantinhotropicalpetshop@gmail.com</p>
               </div>
             </div>
           </div>

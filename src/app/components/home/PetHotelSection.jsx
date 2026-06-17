@@ -34,6 +34,12 @@ export default function PetHotelSection() {
     }
   };
 
+  const handleWhatsAppClick = () => {
+    const phoneNumber = "351915290212";
+    const message = encodeURIComponent("Olá, vim pelo site e gostaria de mais informações sobre o pet hotel");
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+  };
+
   // Loading skeleton
   if (loading) {
     return (
@@ -88,7 +94,9 @@ export default function PetHotelSection() {
             <span className={styles.badge}>{content.petHotelChip}</span>
             <h2 className={styles.title}>{content.petHotelTitle}</h2>
             <p className={styles.text}>{content.petHotelDescription}</p>
-            <button className={styles.button}>Saber Mais sobre o Hotel</button>
+            <button className={styles.button} onClick={handleWhatsAppClick}>
+              Saber Mais sobre o Hotel
+            </button>
           </div>
         </div>
       </div>

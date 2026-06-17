@@ -95,10 +95,13 @@ export default function Footer() {
           </div>
 
           <div>
-            <h6 className={styles.linkTitle}>Contactos</h6>
+            <h6 className={styles.linkTitle}>Apoio ao Cliente</h6>
             <ul className={styles.linkList}>
               <li>
                 <a href="tel:+351915290212">+351 915 290 212</a>
+              </li>
+              <li>
+                <a href="mailto:info@cantinhotropical.pt">cantinhotropicalpetshop@gmail.com</a>
               </li>
               <li>
                 <address style={{ fontStyle: "normal" }}>
