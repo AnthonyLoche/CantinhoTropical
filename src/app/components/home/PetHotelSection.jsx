@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import styles from "../../../assets/css/home/PetHotelSection.module.css";
 import { getTextContentAction } from "@/modules/text-content/actions/get-text-content.action";
+import pet_hotel from "@/assets/images/pethotel.jpeg"
 
 export default function PetHotelSection() {
   const [content, setContent] = useState({
@@ -70,7 +71,7 @@ export default function PetHotelSection() {
     <section className={styles.section}>
       <div className={styles.backgroundOverlay}>
         <Image
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkLYNOdnol9Oe5H5tAwze5N51W1-2-EBR3kLI7A24w8FNbs4HzAtlNBJfON57_18frv9wmg_JWwmVyRX1eZSYTW-01bMvExrUN_RaBXRHpye2ccNXZo3X8PF5ZnrZk1ZeUEvEcOkJNYYixyUXuZZ-HHgPwjOHHEVdLCOQjjdxBHyV1HNJRR1E2RY2sJ1_W_vfGFbq2949v2sLA1g6Uy3h6dT7XKQHjR9Yb4T3cXVU_tVQ6SE4MFBFXL9DLrIwB1Mp-aUAE725KTtQ"
+          src={pet_hotel}
           alt="Pet Hotel Texture"
           fill
           className={styles.textureImage}
@@ -82,7 +83,7 @@ export default function PetHotelSection() {
           <div className={styles.imageWrapper}>
             <div className={styles.imageContainer}>
               <Image
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkLYNOdnol9Oe5H5tAwze5N51W1-2-EBR3kLI7A24w8FNbs4HzAtlNBJfON57_18frv9wmg_JWwmVyRX1eZSYTW-01bMvExrUN_RaBXRHpye2ccNXZo3X8PF5ZnrZk1ZeUEvEcOkJNYYixyUXuZZ-HHgPwjOHHEVdLCOQjjdxBHyV1HNJRR1E2RY2sJ1_W_vfGFbq2949v2sLA1g6Uy3h6dT7XKQHjR9Yb4T3cXVU_tVQ6SE4MFBFXL9DLrIwB1Mp-aUAE725KTtQ"
+                src={pet_hotel}
                 alt="Pet Hotel Room"
                 fill
                 className={styles.hotelImage}
