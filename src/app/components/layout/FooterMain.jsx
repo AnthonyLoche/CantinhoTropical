@@ -99,6 +99,9 @@ export default function Footer() {
             <ul className={styles.linkList}>
               <li>
                 <a href="tel:+351915290212">+351 915 290 212</a>
+                <p style={{ color: "gray", fontSize: "0.9rem" }}>
+                  (Chamada para rede-móvel nacional)
+                </p>
               </li>
               <li>
                 <a href="mailto:info@cantinhotropical.pt">cantinhotropicalpetshop@gmail.com</a>
