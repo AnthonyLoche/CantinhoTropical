@@ -17,7 +17,7 @@ const CARDS = [
   {
     icon: Truck,
     title: "Entrega Especializada",
-    text: "Embalagens pensadas para cada tipo de animal, com segurança e cuidado no transporte.",
+    text: "Embalagens pensadas para cada tipo de artigo",
   },
 ];
 
@@ -37,7 +37,7 @@ export default function HeroCatalog() {
           </div>
           <h1 className={styles.title}>Catálogo<br />Especializado</h1>
           <p className={styles.description}>
-            Uma curadoria premium pensada para o bem-estar do seu santuário particular.
+            Uma tratamento premium pensada para o bem-estar do seu santuário particular.
             De nutrição holística a acessórios sustentáveis para aves, répteis, peixes e pets tradicionais.
           </p>
         </div>
